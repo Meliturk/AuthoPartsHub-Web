@@ -1,0 +1,93 @@
+@model List<AutoPartsWeb.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "Admin Ara\u00e7lar";
+    Layout = "_AdminLayout";
+    var q = (ViewBag.Q ?? "").ToString();
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+        <h3 class="fw-bold mb-1">Ara&ccedil; Y&ouml;netimi</h3>
+        <div class="text-secondary">Ara&ccedil; katalo&#287;u ve uyumluluk kay&#305;tlar&#305;.</div>
+    </div>
+
+    <a class="btn btn-accent" asp-controller="Admin" asp-action="CreateVehicle">
+        <i class="bi bi-plus-lg me-2"></i>Yeni Ara&ccedil;
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+
+        <form method="get" asp-controller="Admin" asp-action="Vehicles" class="row g-2 mb-3 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input class="form-control" name="q" value="@q" placeholder="Marka, model, motor, y&#305;l ara..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-dark w-100" type="submit">
+                    <i class="bi bi-search me-2"></i>Ara
+                </button>
+            </div>
+        </form>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success rounded-4">
+                <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-secondary">
+                        <th>Marka</th>
+                        <th>Model</th>
+                        <th>Y&#305;l</th>
+                        <th>Motor</th>
+                        <th class="text-end">&#304;&#351;lem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@v.Brand</td>
+                            <td>@v.Model</td>
+                            <td>
+                                @if (v.StartYear.HasValue && v.EndYear.HasValue)
+                                {
+                                    @($"{v.StartYear}-{v.EndYear}")
+                                }
+                                else
+                                {
+                                    @v.Year
+                                }
+                            </td>
+                            <td>@(string.IsNullOrWhiteSpace(v.Engine) ? "-" : v.Engine)</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Admin"
+                                   asp-action="EditVehicle"
+                                   asp-route-id="@v.Id">
+                                    D&uuml;zenle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (Model.Count == 0)
+            {
+                <div class="text-center text-secondary py-4">
+                    Sonu&ccedil; bulunamad&#305;.
+                </div>
+            }
+        </div>
+    </div>
+</div>

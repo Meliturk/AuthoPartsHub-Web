@@ -1,0 +1,319 @@
+@model List<AutoPartsWeb.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "Ara\u00e7lar";
+    var vehiclesJson = ViewBag.VehiclesJson as string ?? "[]";
+    var selectedBrand = ViewBag.SelectedBrand as string ?? "";
+    var selectedModel = ViewBag.SelectedModel as string ?? "";
+    int? selectedYear = ViewBag.SelectedYear as int?;
+}
+
+<div class="container py-4 vehicle-page">
+    <div class="vehicle-hero">
+        <div>
+            <h2 class="fw-bold mb-1">Ara&ccedil;lar</h2>
+            <div class="text-secondary">Marka &gt; Model &gt; Y&#305;l bazl&#305; uyumluluk katalo&#287;u.</div>
+        </div>
+        <div class="vehicle-crumb text-secondary small" id="selectionCrumb"></div>
+    </div>
+
+    <div class="vehicle-section">
+        <div class="vehicle-section-head">
+            <div class="fw-bold">Markalar</div>
+            <div class="text-secondary small" id="brandMeta"></div>
+        </div>
+        <div class="vehicle-brand-bar" id="brandBar"></div>
+    </div>
+
+    <div class="vehicle-section">
+        <div class="vehicle-section-head">
+            <div class="fw-bold">Modeller</div>
+            <div class="text-secondary small" id="modelMeta"></div>
+        </div>
+        <div class="vehicle-grid" id="modelGrid"></div>
+    </div>
+
+    <div class="vehicle-section">
+        <div class="vehicle-section-head">
+            <div class="fw-bold">Y&#305;l Aral&#305;klar&#305;</div>
+            <div class="text-secondary small" id="yearMeta"></div>
+        </div>
+        <div class="vehicle-year-grid" id="yearGrid"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const vehicles = @Html.Raw(vehiclesJson);
+        const partsBaseUrl = "@Url.Action("Index", "Parts")";
+        const fallbackImage = "/images/vehicle-placeholder.svg";
+
+        const state = {
+            brand: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(selectedBrand)),
+            model: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(selectedModel)),
+            year: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(selectedYear?.ToString() ?? ""))
+        };
+
+        const brandBar = document.getElementById("brandBar");
+        const modelGrid = document.getElementById("modelGrid");
+        const yearGrid = document.getElementById("yearGrid");
+        const brandMeta = document.getElementById("brandMeta");
+        const modelMeta = document.getElementById("modelMeta");
+        const yearMeta = document.getElementById("yearMeta");
+        const selectionCrumb = document.getElementById("selectionCrumb");
+
+        const brandList = Array.from(new Set(vehicles.map(v => v.brand))).sort();
+
+        if (!vehicles.length) {
+            brandBar.innerHTML = "<div class=\"text-secondary\">Kay\u0131t bulunamad\u0131.</div>";
+            modelGrid.innerHTML = "<div class=\"text-secondary\">Model bulunamad\u0131.</div>";
+            yearGrid.innerHTML = "<div class=\"text-secondary\">Y\u0131l bulunamad\u0131.</div>";
+            selectionCrumb.textContent = "Kay\u0131t bulunamad\u0131.";
+            return;
+        }
+
+        if (state.brand && !brandList.includes(state.brand)) {
+            state.brand = "";
+            state.model = "";
+            state.year = "";
+        }
+
+        const slugify = (value) => {
+            return (value || "")
+                .toString()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        };
+
+        const expandYears = (v) => {
+            if (v.startYear && v.endYear && v.startYear <= v.endYear) {
+                const years = [];
+                for (let y = v.startYear; y <= v.endYear; y++) years.push(y);
+                return years;
+            }
+            return [v.year];
+        };
+
+        const getImageCandidates = (brand, model) => {
+            const b = slugify(brand);
+            const m = slugify(model);
+            return [
+                `/images/vehicles/${b}/${m}.webp`,
+                `/images/vehicles/${b}/${m}.jpg`,
+                `/images/vehicles/${b}/${m}.png`
+            ];
+        };
+
+        const setVehicleImage = (img, imageUrl, brand, model) => {
+            const candidates = [];
+            if (imageUrl) candidates.push(imageUrl);
+            candidates.push(...getImageCandidates(brand, model));
+            let index = 0;
+            const tryNext = () => {
+                if (index >= candidates.length) {
+                    img.src = fallbackImage;
+                    return;
+                }
+                img.src = candidates[index++];
+            };
+            img.onerror = tryNext;
+            tryNext();
+        };
+
+        const getModelsForBrand = (brand) => {
+            const map = new Map();
+            vehicles
+                .filter(v => v.brand === brand)
+                .forEach(v => {
+                    const key = v.model;
+                    if (!map.has(key)) {
+                        map.set(key, { years: new Set(), imageUrl: "", imageEndYear: -1 });
+                    }
+                    const entry = map.get(key);
+                    const endYear = v.endYear || v.year;
+                    expandYears(v).forEach(y => entry.years.add(y));
+                    if (endYear > entry.imageEndYear || (endYear === entry.imageEndYear && !entry.imageUrl && v.imageUrl)) {
+                        entry.imageEndYear = endYear;
+                        entry.imageUrl = v.imageUrl;
+                    }
+                });
+            return Array.from(map.entries())
+                .map(([name, data]) => {
+                    const years = Array.from(data.years).sort((a, b) => b - a);
+                    return {
+                        name,
+                        years,
+                        minYear: years[years.length - 1],
+                        maxYear: years[0],
+                        imageUrl: data.imageUrl
+                    };
+                })
+                .sort((a, b) => a.name.localeCompare(b.name));
+        };
+
+        const getRangesForModel = (brand, model) => {
+            const ranges = new Map();
+            vehicles
+                .filter(v => v.brand === brand && v.model === model)
+                .forEach(v => {
+                    const start = v.startYear || v.year;
+                    const end = v.endYear || v.year;
+                    const key = `${start}-${end}`;
+                    if (!ranges.has(key)) {
+                        ranges.set(key, { start, end, imageUrl: v.imageUrl || "" });
+                    } else {
+                        const entry = ranges.get(key);
+                        if (entry && !entry.imageUrl && v.imageUrl) {
+                            entry.imageUrl = v.imageUrl;
+                        }
+                    }
+                });
+            return Array.from(ranges.values())
+                .sort((a, b) => (b.end - a.end) || (b.start - a.start));
+        };
+
+        const buildRangeLabel = (range) => {
+            if (range.start === range.end) return `${range.start}`;
+            return `${range.start} - ${range.end}`;
+        };
+
+        const buildPartsUrl = (brand, model, range) => {
+            const params = new URLSearchParams();
+            params.set("brand", brand);
+            params.set("model", model);
+            const start = Math.min(range.start, range.end);
+            const end = Math.max(range.start, range.end);
+            for (let y = start; y <= end; y++) {
+                params.append("yearList", y);
+            }
+            return `${partsBaseUrl}?${params.toString()}`;
+        };
+
+        const setCrumb = () => {
+            const parts = [];
+            if (state.brand) parts.push(state.brand);
+            if (state.model) parts.push(state.model);
+            if (state.year) parts.push(state.year);
+            selectionCrumb.textContent = parts.length ? parts.join(" / ") : "Bir marka se\u00e7in.";
+        };
+
+        const renderBrands = () => {
+            brandBar.innerHTML = "";
+            brandList.forEach(brand => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "vehicle-brand-pill" + (brand === state.brand ? " active" : "");
+                btn.textContent = brand;
+                btn.addEventListener("click", () => {
+                    if (state.brand !== brand) {
+                        state.brand = brand;
+                        state.model = "";
+                        state.year = "";
+                        renderAll();
+                    }
+                });
+                brandBar.appendChild(btn);
+            });
+            brandMeta.textContent = `${brandList.length} marka`;
+        };
+
+        const renderModels = () => {
+            modelGrid.innerHTML = "";
+            if (!state.brand && brandList.length) state.brand = brandList[0];
+            if (!state.brand) {
+                modelMeta.textContent = "";
+                return;
+            }
+
+            const models = getModelsForBrand(state.brand);
+            if (!state.model && models.length) state.model = models[0].name;
+
+            modelMeta.textContent = `${models.length} model`;
+
+            models.forEach(model => {
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = "vehicle-card vehicle-model-card" + (model.name === state.model ? " active" : "");
+                card.addEventListener("click", () => {
+                    if (state.model !== model.name) {
+                        state.model = model.name;
+                        state.year = "";
+                        renderYears();
+                        renderModels();
+                    }
+                });
+
+                const img = document.createElement("img");
+                img.alt = `${state.brand} ${model.name}`;
+                setVehicleImage(img, model.imageUrl, state.brand, model.name);
+
+                const body = document.createElement("div");
+                body.className = "vehicle-card-body";
+
+                const title = document.createElement("div");
+                title.className = "fw-semibold";
+                title.textContent = model.name;
+
+                const meta = document.createElement("div");
+                meta.className = "vehicle-meta";
+                meta.textContent = `${model.minYear} - ${model.maxYear}`;
+
+                body.appendChild(title);
+                body.appendChild(meta);
+                card.appendChild(img);
+                card.appendChild(body);
+                modelGrid.appendChild(card);
+            });
+            setCrumb();
+        };
+
+        const renderYears = () => {
+            yearGrid.innerHTML = "";
+            if (!state.brand || !state.model) {
+                yearMeta.textContent = "";
+                return;
+            }
+            const ranges = getRangesForModel(state.brand, state.model);
+            yearMeta.textContent = `${ranges.length} y\u0131l aral\u0131\u011f\u0131`;
+
+            ranges.forEach(range => {
+                const isActive = state.year
+                    && parseInt(state.year, 10) >= range.start
+                    && parseInt(state.year, 10) <= range.end;
+                const link = document.createElement("a");
+                link.className = "vehicle-year-card" + (isActive ? " active" : "");
+                link.href = buildPartsUrl(state.brand, state.model, range);
+
+                const img = document.createElement("img");
+                img.alt = `${state.brand} ${state.model} ${buildRangeLabel(range)}`;
+                setVehicleImage(img, range.imageUrl, state.brand, state.model);
+
+                const label = document.createElement("div");
+                label.className = "year-label";
+                label.textContent = buildRangeLabel(range);
+
+                const hint = document.createElement("div");
+                hint.className = "text-secondary small";
+                hint.textContent = "Par\u00e7alar\u0131 g\u00f6r";
+
+                link.appendChild(img);
+                link.appendChild(label);
+                link.appendChild(hint);
+                yearGrid.appendChild(link);
+            });
+        };
+
+        const renderAll = () => {
+            if (!state.brand && brandList.length) {
+                state.brand = brandList[0];
+            }
+            renderBrands();
+            renderModels();
+            renderYears();
+            setCrumb();
+        };
+
+        renderAll();
+    });
+</script>

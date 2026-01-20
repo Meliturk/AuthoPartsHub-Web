@@ -1,0 +1,34 @@
+@model AutoPartsWeb.Models.ContactMessage
+
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0"><i class="bi bi-chat-left-text me-2"></i>Mesaj #@Model.Id</h3>
+        <div class="text-secondary small">Tarih: @Model.CreatedAt.ToLocalTime().ToString("g")</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Complaints">Geri</a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div><strong>Ad:</strong> @Model.Name</div>
+                <div><strong>Email:</strong> @Model.Email</div>
+                <div><strong>Telefon:</strong> @(string.IsNullOrWhiteSpace(Model.Phone) ? "-" : Model.Phone)</div>
+                <div class="mt-2">
+                    <span class="status-dot @(Model.Status == "Yeni" ? "status-new" : "status-read")"></span>
+                    @(string.IsNullOrWhiteSpace(Model.Status) ? "-" : Model.Status)
+                </div>
+            </div>
+            <div class="col-12">
+                <h6 class="fw-semibold mt-3">Mesaj</h6>
+                <div class="text-secondary">@Model.Message</div>
+            </div>
+        </div>
+    </div>
+</div>

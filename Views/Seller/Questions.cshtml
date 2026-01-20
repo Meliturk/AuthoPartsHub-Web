@@ -1,0 +1,87 @@
+@model List<AutoPartsWeb.Models.ProductQuestion>
+@{
+    ViewData["Title"] = "Sorular";
+    Layout = "_SellerLayout";
+}
+
+<style>
+    .q-body { white-space: pre-wrap; max-height: 220px; overflow:auto; }
+</style>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Sorular</h3>
+        <div class="text-secondary small">Müşteri soruları ve yanıtlar</div>
+    </div>
+    <div class="d-flex gap-2">
+        @if (ViewBag.ShowingAnswered == true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Questions">Aktif Sorular</a>
+        }
+        @if (ViewBag.ShowingAnswered != true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Questions" asp-route-status="Answered">Cevaplananlar</a>
+        }
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="list-group list-group-flush">
+        @foreach (var q in Model)
+        {
+            var asker = string.IsNullOrWhiteSpace(q.User?.FullName) ? "Kullanıcı" : q.User!.FullName;
+            var img = !string.IsNullOrWhiteSpace(q.Part.ImageUrl)
+                ? q.Part.ImageUrl
+                : q.Part.PartImages?.OrderBy(pi => pi.SortOrder).FirstOrDefault()?.Url;
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1 me-3">
+                        <div class="fw-semibold">@q.Part.Name</div>
+                        <div class="text-secondary small">@asker • @q.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                        <div class="mt-2 q-body">@q.Question</div>
+                        <form asp-action="AnswerQuestion" method="post" class="mt-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@q.Id" />
+                            <div class="row g-2">
+                                <div class="col-md-10">
+                                    <textarea name="answer" class="form-control" rows="2" placeholder="Yanıt yazın...">@q.Answer</textarea>
+                                </div>
+                                <div class="col-md-2 d-grid">
+                                    <button class="btn btn-accent" type="submit">Kaydet</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div style="width:180px;">
+                        <a class="text-decoration-none text-dark" asp-controller="Parts" asp-action="Details" asp-route-id="@q.PartId">
+                            <div class="card border-0 shadow-sm">
+                                <div class="ratio ratio-4x3 rounded-top overflow-hidden">
+                                    @if (!string.IsNullOrWhiteSpace(img))
+                                    {
+                                        <img src="@img" alt="@q.Part.Name" style="object-fit:cover; width:100%; height:100%;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                            <i class="bi bi-image text-secondary"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="p-2 small fw-semibold text-truncate">@q.Part.Name</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Count == 0)
+        {
+            <div class="list-group-item text-secondary">Henüz soru yok.</div>
+        }
+    </div>
+</div>

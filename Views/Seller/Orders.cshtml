@@ -1,0 +1,108 @@
+﻿@model List<AutoPartsWeb.Models.SellerOrderDto>
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_SellerLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Siparişler</h3>
+        <div class="text-secondary small">Bu siparişlerde yalnızca sizin ürünleriniz listelenir.</div>
+    </div>
+    <div class="d-flex gap-2">
+        @if (ViewBag.ShowingCompleted == true || ViewBag.ShowingCancelled == true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders">Aktif Siparisler</a>
+        }
+        @if (ViewBag.ShowingCompleted != true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders" asp-route-status="Completed">Tamamlananlar</a>
+        }
+        @if (ViewBag.ShowingCancelled != true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders" asp-route-status="Cancelled">Iptaller</a>
+        }
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="text-secondary small">
+                <tr>
+                    <th>#</th>
+                    <th>Müşteri</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th>Ürünler</th>
+                    <th class="text-end">Tutar</th>
+                    <th class="text-end">Detay</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    string statusText = o.Status switch
+                    {
+                        "Pending" => "Beklemede",
+                        "Processing" => "Hazırlanıyor",
+                        "Shipped" => "Kargoda",
+                        "Cancelled" => "İptal",
+                        "Completed" => "Tamamlandı",
+                        _ => o.Status
+                    };
+                    <tr>
+                        <td>@o.OrderId</td>
+                        <td>@o.CustomerName</td>
+                        <td>@o.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td><span class="badge text-bg-light border">@statusText</span></td>
+                        <td>
+                            <ul class="mb-0 small list-unstyled">
+                                @foreach (var item in o.Items)
+                                {
+                                    <li class="d-flex align-items-center gap-2 mb-1">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.PartName" style="width:36px; height:36px; object-fit:cover; border-radius:8px;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                                <i class="bi bi-image text-secondary"></i>
+                                            </div>
+                                        }
+                                        <span>@item.PartName x @item.Quantity (@((item.UnitPrice * item.Quantity).ToString("C0")))</span>
+                                    </li>
+                                }
+                            </ul>
+                        </td>
+                        <td class="text-end fw-semibold">
+                            @o.Total.ToString("C0")
+                            <form asp-action="UpdateOrderStatus" method="post" class="d-inline ms-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@o.OrderId" />
+                                <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                    @if (o.Status == "Pending") { <option value="Pending" selected>Beklemede</option> } else { <option value="Pending">Beklemede</option> }
+                                    @if (o.Status == "Processing") { <option value="Processing" selected>Hazırlanıyor</option> } else { <option value="Processing">Hazırlanıyor</option> }
+                                    @if (o.Status == "Shipped") { <option value="Shipped" selected>Kargoda</option> } else { <option value="Shipped">Kargoda</option> }
+                                    @if (o.Status == "Cancelled") { <option value="Cancelled" selected>İptal</option> } else { <option value="Cancelled">İptal</option> }
+                                    @if (o.Status == "Completed") { <option value="Completed" selected>Tamamlandı</option> } else { <option value="Completed">Tamamlandı</option> }
+                                </select>
+                                <button class="btn btn-sm btn-accent ms-1" type="submit">Güncelle</button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="OrderDetail" asp-route-id="@o.OrderId">
+                                Gör
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (Model.Count == 0)
+                {
+                    <tr><td colspan="7" class="text-center text-secondary py-4">Henüz sipariş yok.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

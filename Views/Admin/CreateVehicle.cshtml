@@ -1,0 +1,78 @@
+@model AutoPartsWeb.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Admin Yeni Ara\u00e7";
+    Layout = "_AdminLayout";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-car-front me-2"></i>Yeni Ara&ccedil; Ekle
+                </h3>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="ImportVehicles">
+                        <i class="bi bi-upload me-2"></i>CSV Aktar
+                    </a>
+                    <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Vehicles">
+                        Geri
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success rounded-4">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                </div>
+            }
+
+            <form asp-controller="Admin" asp-action="CreateVehicle" method="post" class="row g-3">
+
+                <input type="hidden" name="Year" value="@(Model?.Year ?? 0)" />
+
+                <div class="col-md-3">
+                    <label class="form-label">Marka</label>
+                    <input class="form-control" name="Brand" placeholder="&Ouml;rn: Fiat" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Model</label>
+                    <input class="form-control" name="Model" placeholder="&Ouml;rn: Egea" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Ba&#351;lang&#305;&ccedil; Y&#305;l&#305;</label>
+                    <input class="form-control" name="StartYear" type="number" min="1950" max="2100" placeholder="&Ouml;rn: 2010" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Biti&#351; Y&#305;l&#305;</label>
+                    <input class="form-control" name="EndYear" type="number" min="1950" max="2100" placeholder="&Ouml;rn: 2020" required />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">G&ouml;rsel URL (opsiyonel)</label>
+                    <input class="form-control" name="ImageUrl" type="url" placeholder="https://ornek.com/gorsel.webp" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Motor (opsiyonel)</label>
+                    <input class="form-control" name="Engine" placeholder="&Ouml;rn: 1.3 Multijet / 1.6 TDI" />
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-dark w-100 mt-2 d-flex align-items-center justify-content-center gap-2" type="submit">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>Ara&ccedil; Ekle</span>
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

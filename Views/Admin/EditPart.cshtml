@@ -1,0 +1,241 @@
+@model AutoPartsWeb.Models.Part
+@{
+    ViewData["Title"] = "Parça Düzenle";
+    Layout = "_AdminLayout";
+    var vehicles = ViewBag.Vehicles as List<AutoPartsWeb.Models.Vehicle> ?? new();
+    var categories = new List<SelectListItem>
+    {
+        new("Fren","Fren", Model.Category == "Fren"),
+        new("Motor","Motor", Model.Category == "Motor"),
+        new("Filtre","Filtre", Model.Category == "Filtre"),
+        new("Süspansiyon","Süspansiyon", Model.Category == "Süspansiyon"),
+        new("Şanzıman","Şanzıman", Model.Category == "Şanzıman"),
+        new("Elektrik","Elektrik", Model.Category == "Elektrik"),
+        new("Lastik","Lastik", Model.Category == "Lastik"),
+        new("Jant","Jant", Model.Category == "Jant"),
+        new("Kaporta","Kaporta", Model.Category == "Kaporta"),
+        new("Aydınlatma","Aydınlatma", Model.Category == "Aydınlatma"),
+        new("Egzoz","Egzoz", Model.Category == "Egzoz"),
+        new("Soğutma","Soğutma", Model.Category == "Soğutma"),
+        new("Yakıt","Yakıt", Model.Category == "Yakıt"),
+        new("Direksiyon","Direksiyon", Model.Category == "Direksiyon"),
+        new("İç Donanım","İç Donanım", Model.Category == "İç Donanım"),
+        new("Dış Aksesuar","Dış Aksesuar", Model.Category == "Dış Aksesuar")
+    };
+    var selectedVehicleIds = (Model.PartVehicles ?? new List<AutoPartsWeb.Models.PartVehicle>()).Select(pv => pv.VehicleId).ToHashSet();
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Parça Düzenle
+                </h3>
+                <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Parts">Geri</a>
+            </div>
+
+            <form asp-controller="Admin" asp-action="EditPart" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label">Parça Adı</label>
+                    <input class="form-control" asp-for="Name" maxlength="80" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Marka</label>
+                    <input class="form-control" asp-for="Brand" required />
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" asp-for="Category" asp-items="categories" required>
+                            @if (string.IsNullOrWhiteSpace(Model.Category))
+                            {
+                                <option value="" disabled selected>Se&#231;</option>
+                            }
+                            else
+                            {
+                                <option value="" disabled>Se&#231;</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Durum</label>
+                        <select class="form-select" asp-for="Condition" required>
+                            <option value="Sıfır">Sıfır</option>
+                            <option value="Çıkma">Çıkma</option>
+                            <option value="İkinci El">İkinci El</option>
+                            <option value="Yenilenmiş">Yenilenmiş</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Uyumlu Araçlar</label>
+                        <div class="dropdown w-100">
+                            <button class="form-control text-start dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Araçları Seç
+                            </button>
+                            <div class="dropdown-menu p-3 w-100" style="max-height: 320px; overflow:auto;">
+                                <input class="form-control form-control-sm mb-2" type="search" placeholder="Araç ara..." oninput="filterVehicles('vehicle-list-edit', this.value)" />
+                                <div id="vehicle-list-edit">
+                                    @for (int i = 0; i < vehicles.Count; i++)
+                                    {
+                                        var v = vehicles[i];
+                                        var checkedAttr = selectedVehicleIds.Contains(v.Id) ? "checked" : string.Empty;
+                                        int? startVal = v.StartYear ?? v.Year;
+                                        int? endVal = v.EndYear ?? v.Year;
+                                        <div class="border rounded-3 p-2 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="vehicleIds" value="@v.Id" id="v_@v.Id" @checkedAttr>
+                                                <label class="form-check-label small fw-semibold" for="v_@v.Id">
+                                                    @v.Brand @v.Model (@(startVal.HasValue ? startVal.Value.ToString() : v.Year.ToString())@((endVal.HasValue && endVal != startVal) ? $" - {endVal}" : "")) @(string.IsNullOrWhiteSpace(v.Engine) ? "" : $"- {v.Engine}")
+                                                </label>
+                                            </div>
+                                            <div class="row g-2 mt-2 align-items-center">
+                                                <div class="col-6">
+                                                    <label class="form-label small mb-1">Başlangıç Yılı</label>
+                                                    <input type="number" class="form-control form-control-sm" name="startYears" value="@(startVal ?? v.Year)" min="1900" max="2100" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label small mb-1">Bitiş Yılı</label>
+                                                    <input type="number" class="form-control form-control-sm" name="endYears" value="@(endVal ?? v.Year)" min="1900" max="2100" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-text">Birden fazla araç seçip yıl aralığını girebilirsiniz.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <label class="form-label">Fiyat</label>
+                        <input class="form-control" asp-for="Price" type="number" step="0.01" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Stok</label>
+                        <input class="form-control" asp-for="Stock" type="number" required />
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" asp-for="Description" rows="4" placeholder="Opsiyonel açıklama"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Görsel URL</label>
+                    <input class="form-control" asp-for="ImageUrl" placeholder="https://.../resim.jpg" />
+                    <div class="text-secondary small">CDN/link ekleyin. (Opsiyonel)</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Görsel Yükle (Dosya)</label>
+                    <input class="form-control" type="file" name="ImageFile" accept=".webp" />
+                    <div class="text-secondary small">Sadece .webp dosyaları; dosya yüklenirse URL yerine dosya kullanılır.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ek Fotoğraflar (Galeri)</label>
+                    <input class="form-control" type="file" name="GalleryFiles" accept=".webp" multiple />
+                    <div class="text-secondary small">Birden fazla fotoğraf seçebilirsiniz. Kapak görseli yukarıdaki alandan seçilir.</div>
+                </div>
+
+                @if (Model.PartImages != null && Model.PartImages.Any())
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Galeri</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            @foreach (var img in Model.PartImages.OrderBy(pi => pi.SortOrder))
+                            {
+                                <div class="position-relative border rounded-3 overflow-hidden" style="width:120px; height:120px;">
+                                    <img src="@img.Url" alt="Galeri" style="width:100%; height:100%; object-fit:cover;" />
+                                    <button type="submit" form="remove-img-@img.Id" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1" style="width:28px; height:28px; padding:0;" title="Sil" aria-label="Sil">&times;</button>
+                                    <div class="position-absolute bottom-0 start-0 end-0 d-flex justify-content-between p-1" style="background:rgba(0,0,0,.45);">
+                                        <form asp-controller="Admin" asp-action="MovePartImage" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@img.Id" />
+                                            <input type="hidden" name="partId" value="@Model.Id" />
+                                            <input type="hidden" name="direction" value="-1" />
+                                            <button class="btn btn-sm btn-light" type="submit" title="Yukarı" style="padding:0 6px;">↑</button>
+                                        </form>
+                                        <form asp-controller="Admin" asp-action="MovePartImage" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@img.Id" />
+                                            <input type="hidden" name="partId" value="@Model.Id" />
+                                            <input type="hidden" name="direction" value="1" />
+                                            <button class="btn btn-sm btn-light" type="submit" title="Aşağı" style="padding:0 6px;">↓</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <button class="btn btn-accent w-100 mt-4" type="submit">
+                    <i class="bi bi-save me-2"></i>Güncelle
+                </button>
+            </form>
+            @if (Model.PartImages != null && Model.PartImages.Any())
+            {
+                foreach (var img in Model.PartImages.OrderBy(pi => pi.SortOrder))
+                {
+                    <form id="remove-img-@img.Id" asp-controller="Admin" asp-action="RemovePartImage" method="post" class="d-none">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@img.Id" />
+                        <input type="hidden" name="partId" value="@Model.Id" />
+                    </form>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterVehicles(containerId, term) {
+        term = (term || "").toLowerCase();
+        const items = document.querySelectorAll(`#${containerId} .border`);
+        items.forEach(el => {
+            const txt = el.innerText.toLowerCase();
+            el.style.display = txt.indexOf(term) !== -1 ? "" : "none";
+        });
+    }
+
+    function initVehicleYearToggles(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const rows = container.querySelectorAll(".border");
+        rows.forEach(row => {
+            const checkbox = row.querySelector("input[type='checkbox'][name='vehicleIds']");
+            const start = row.querySelector("input[name='startYears']");
+            const end = row.querySelector("input[name='endYears']");
+            if (!checkbox || !start || !end) return;
+
+            const toggle = () => {
+                const enabled = checkbox.checked;
+                start.disabled = !enabled;
+                end.disabled = !enabled;
+            };
+
+            checkbox.addEventListener("change", toggle);
+            toggle();
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        initVehicleYearToggles("vehicle-list-edit");
+    });
+</script>
+

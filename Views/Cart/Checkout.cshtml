@@ -1,0 +1,72 @@
+@model List<AutoPartsWeb.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Ödeme";
+    var total = (decimal)(ViewBag.Total ?? 0m);
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-3">Ödeme</h2>
+
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning">@TempData["Warning"]</div>
+    }
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Teslimat Bilgileri</h5>
+                    <form asp-controller="Cart" asp-action="Checkout" method="post" class="row g-3">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-6">
+                            <label class="form-label">Ad Soyad</label>
+                            <input class="form-control" name="customerName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-posta</label>
+                            <input class="form-control" name="email" type="email" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Adres</label>
+                            <textarea class="form-control" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Şehir</label>
+                            <input class="form-control" name="city" />
+                        </div>
+                            <div class="col-md-6">
+                            <label class="form-label">Telefon</label>
+                            <input class="form-control" name="phone" />
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-accent" type="submit">Siparişi Tamamla</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Sepet Özeti</h5>
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var item in Model)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <span>@item.Name x @item.Quantity</span>
+                                <span>@((item.Price * item.Quantity).ToString("C0"))</span>
+                            </div>
+                        }
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Toplam</span>
+                        <span>@total.ToString("C0")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

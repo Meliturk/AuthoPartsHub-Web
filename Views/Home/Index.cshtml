@@ -1,0 +1,294 @@
+﻿@using System.Text.Json
+@model List<AutoPartsWeb.Models.Part>
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    var list = Model ?? new List<AutoPartsWeb.Models.Part>();
+    var featured = list.Take(4).ToList();
+    var categories = list.Select(p => p.Category).Distinct().Take(6).ToList();
+    var brands = ViewBag.Brands as List<string> ?? new();
+    var vehicleData = ViewBag.VehicleData ?? new List<object>();
+    var vehicleDataJson = JsonSerializer.Serialize(vehicleData);
+    var ratings = ViewBag.Ratings as Dictionary<int, (double avg, int count)> ?? new();
+    Func<AutoPartsWeb.Models.Vehicle, string> formatVehicleLabel = v =>
+    {
+        var sy = v.StartYear ?? v.Year;
+        var ey = v.EndYear ?? v.Year;
+        var yearText = sy == ey ? sy.ToString() : $"{sy}-{ey}";
+        return $"{v.Brand} {v.Model} ({yearText})";
+    };
+}
+
+<div class="container py-4">
+    <div class="p-4 p-md-5 rounded-4 text-white"
+         style="background: linear-gradient(135deg, var(--brand) 0%, #123a6b 60%, #0b1f3a 100%);">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-pill"
+                     style="background: rgba(255,255,255,.12);">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="small">OEM / Aftermarket • Hızlı arama • Stok bilgisi</span>
+                </div>
+
+                <h1 class="display-6 fw-bold mb-2">Aracına Uygun Yedek Parçayı Bul</h1>
+                <p class="lead mb-4" style="opacity:.9;">
+                    Fren, süspansiyon, filtreler, sensörler ve daha fazlası. Araç uyumluluğuna göre filtrele, güvenle seç.
+                </p>
+
+                <form class="bg-white rounded-4 p-2 d-flex gap-2 align-items-center" style="max-width: 640px;" asp-controller="Parts" asp-action="Index" method="get">
+                    <i class="bi bi-search text-secondary ms-2"></i>
+                    <input class="form-control border-0 shadow-none" type="text" name="q" placeholder="Örn: Fren balatası, O2 sensörü, yağ filtresi..." />
+                    <button class="btn btn-accent px-4" type="submit">Ara</button>
+                </form>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    @foreach (var c in categories)
+                    {
+                        <a href="@Url.Action("Index", "Parts", new { category = c })" class="btn btn-sm btn-outline-light rounded-pill">@c</a>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="bg-white text-dark rounded-4 p-4 shadow-sm">
+                    <h5 class="fw-bold mb-3">Araç Uyumluluk Araması</h5>
+                    <form method="get" asp-controller="Parts" asp-action="Index">
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <label class="form-label small text-secondary mb-1">Marka</label>
+                                <div class="dropdown w-100">
+                                    <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="brandDropdown">
+                                        <span id="brandText">Marka se&#231;</span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu w-100" id="brandMenu" style="max-height:200px; overflow:auto;"></ul>
+                                    <input type="hidden" name="brand" id="brandInput" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label small text-secondary mb-1">Model</label>
+                                <div class="dropdown w-100">
+                                    <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="modelDropdown">
+                                        <span id="modelText">Model se&#231;</span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu w-100" id="modelMenu" style="max-height:200px; overflow:auto;"></ul>
+                                    <input type="hidden" name="model" id="modelInput" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label small text-secondary mb-1">Yıl</label>
+                                <div class="dropdown w-100">
+                                    <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="yearDropdown">
+                                        <span id="yearText">Y&#305;l se&#231;</span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu w-100" id="yearMenu" style="max-height:200px; overflow:auto;"></ul>
+                                    <input type="hidden" name="year" id="yearInput" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button class="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-funnel"></i> Uyumlu Parçaları Gör
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4 class="fw-bold mb-3">Öne Çıkan Parçalar</h4>
+
+        @if (!featured.Any())
+        {
+            <div class="alert alert-info rounded-4">Şu anda öne çıkan parça yok.</div>
+        }
+        else
+        {
+            var compatDict = featured.ToDictionary(p => p.Id, p => p.PartVehicles?.Select(pv => pv.Vehicle).Where(v => v != null).ToList() ?? new());
+            <div class="row g-3">
+                @foreach (var p in featured)
+                {
+                    var statusBadge = p.Stock <= 0 ? "badge-danger" : p.Stock <= 3 ? "badge-warning" : "badge-success";
+                    var statusText = p.Stock <= 0 ? "Tükendi" : p.Stock <= 3 ? "Az" : "Stokta";
+                    var compat = compatDict[p.Id];
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="product-card h-100 position-relative overflow-hidden">
+                            <div class="ratio ratio-4x3">
+                                @if (!string.IsNullOrWhiteSpace(p.ImageUrl))
+                                {
+                                    <img src="@p.ImageUrl" alt="@p.Name" class="w-100 h-100" style="object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                        <img src="~/images/logo.png" alt="@p.Name" class="p-3" style="max-height:80%; object-fit:contain;" />
+                                    </div>
+                                }
+                                <span class="badge status-badge @statusBadge">@statusText</span>
+                            </div>
+
+                            <div class="p-3 d-flex flex-column gap-1">
+                                <div class="fw-semibold product-title">@p.Name</div>
+                                <div class="product-meta">@p.Brand • @p.Category</div>
+                                @if (ratings.TryGetValue(p.Id, out var rinfo) && rinfo.count > 0)
+                                {
+                                    <div class="d-flex align-items-center gap-1 text-warning small">
+                                        @for (int s = 1; s <= 5; s++)
+                                        {
+                                            var cls = s <= Math.Round(rinfo.avg) ? "bi-star-fill" : "bi-star";
+                                            <i class="bi @cls"></i>
+                                        }
+                                        <span class="text-secondary">(@rinfo.count)</span>
+                                    </div>
+                                }
+
+                                <div class="product-compat">
+                                    @if (compat != null && compat.Count > 0)
+                                    {
+                                        @string.Join(", ", compat.Select(v => formatVehicleLabel(v!)))
+                                    }
+                                    else if (p.Vehicle != null)
+                                    {
+                                        @formatVehicleLabel(p.Vehicle)
+                                    }
+                                </div>
+
+                                <div class="flex-grow-1"></div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div class="price">@p.Price.ToString("C0")</div>
+                                    <span class="small text-secondary">Stok: @p.Stock</span>
+                                </div>
+                                <form class="mt-2" asp-controller="Cart" asp-action="Add" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="partId" value="@p.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path + Context.Request.QueryString" />
+                                    <button class="btn btn-sm btn-accent w-100 d-flex align-items-center justify-content-center gap-2" type="submit">
+                                        <i class="bi bi-bag-plus"></i> Sepete Ekle
+                                    </button>
+                                </form>
+                            </div>
+                            <a class="stretched-link" asp-controller="Parts" asp-action="Details" asp-route-id="@p.Id"></a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const vehicleData = @Html.Raw(JsonSerializer.Serialize(ViewBag.VehicleData ?? new List<object>()));
+        const brandMenu = document.getElementById("brandMenu");
+        const modelMenu = document.getElementById("modelMenu");
+        const yearMenu = document.getElementById("yearMenu");
+        const brandInput = document.getElementById("brandInput");
+        const modelInput = document.getElementById("modelInput");
+        const yearInput = document.getElementById("yearInput");
+        const brandText = document.getElementById("brandText");
+        const modelText = document.getElementById("modelText");
+        const yearText = document.getElementById("yearText");
+
+        const unique = (arr) => Array.from(new Set(arr));
+
+        const bs = window.bootstrap || null;
+        const brandDropdown = bs ? bs.Dropdown.getOrCreateInstance(document.getElementById("brandDropdown")) : null;
+        const modelDropdown = bs ? bs.Dropdown.getOrCreateInstance(document.getElementById("modelDropdown")) : null;
+        const yearDropdown = bs ? bs.Dropdown.getOrCreateInstance(document.getElementById("yearDropdown")) : null;
+
+        function renderBrands() {
+            brandMenu.innerHTML = "";
+            const all = unique(vehicleData.map(v => (v.brand ?? v.Brand)).filter(Boolean)).sort();
+            all.unshift("");
+            all.forEach(b => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.className = "dropdown-item";
+                a.href = "#";
+                a.textContent = b === "" ? "Marka se\u00e7" : b;
+                a.onclick = (e) => { e.preventDefault(); selectBrand(b); };
+                li.appendChild(a);
+                brandMenu.appendChild(li);
+            });
+        }
+
+        function renderModels(brand) {
+            modelMenu.innerHTML = "";
+            const models = vehicleData
+                .filter(v => !brand || (v.brand ?? v.Brand) === brand)
+                .map(v => (v.model ?? v.Model)).filter(Boolean);
+            const all = unique(models).sort();
+            all.unshift("");
+            all.forEach(m => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.className = "dropdown-item";
+                a.href = "#";
+                a.textContent = m === "" ? "Model se\u00e7" : m;
+                a.onclick = (e) => { e.preventDefault(); selectModel(m); };
+                li.appendChild(a);
+                modelMenu.appendChild(li);
+            });
+        }
+
+        function renderYears(brand, model) {
+            yearMenu.innerHTML = "";
+            const years = vehicleData
+                .filter(v => (!brand || (v.brand ?? v.Brand) === brand) && (!model || (v.model ?? v.Model) === model))
+                .map(v => (v.year ?? v.Year))
+                .map(y => typeof y === "number" ? y : parseInt(y, 10))
+                .filter(y => Number.isFinite(y) && y >= 1970);
+            const all = unique(years).sort((a, b) => b - a);
+            all.unshift("");
+            all.forEach(y => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.className = "dropdown-item";
+                a.href = "#";
+                a.textContent = y === "" ? "Y\u0131l se\u00e7" : y;
+                a.onclick = (e) => { e.preventDefault(); selectYear(y); };
+                li.appendChild(a);
+                yearMenu.appendChild(li);
+            });
+        }
+
+        function selectBrand(val) {
+            brandInput.value = val;
+            brandText.textContent = val === "" ? "Marka se\u00e7" : val;
+            modelInput.value = "";
+            modelText.textContent = "Model se\u00e7";
+            yearInput.value = "";
+            yearText.textContent = "Y\u0131l se\u00e7";
+            renderModels(val);
+            renderYears(val, "");
+            brandDropdown?.hide();
+            modelDropdown?.hide();
+            yearDropdown?.hide();
+        }
+
+        function selectModel(val) {
+            modelInput.value = val;
+            modelText.textContent = val === "" ? "Model se\u00e7" : val;
+            yearInput.value = "";
+            yearText.textContent = "Y\u0131l se\u00e7";
+            renderYears(brandInput.value, val);
+            modelDropdown?.hide();
+            yearDropdown?.hide();
+        }
+
+        function selectYear(val) {
+            yearInput.value = val;
+            yearText.textContent = val === "" ? "Y\u0131l se\u00e7" : val;
+            yearDropdown?.hide();
+        }
+
+        renderBrands(); renderModels(""); renderYears("", "");
+    });
+</script>

@@ -1,0 +1,62 @@
+@model AutoPartsWeb.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Admin Ara\u00e7 D\u00fczenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Ara&ccedil; D&uuml;zenle
+                </h3>
+                <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Vehicles">Geri</a>
+            </div>
+
+            <form asp-controller="Admin" asp-action="EditVehicle" method="post" class="row g-3">
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <input type="hidden" name="Year" value="@Model.Year" />
+
+                <div class="col-md-3">
+                    <label class="form-label">Marka</label>
+                    <input class="form-control" name="Brand" value="@Model.Brand" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Model</label>
+                    <input class="form-control" name="Model" value="@Model.Model" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Ba&#351;lang&#305;&ccedil; Y&#305;l&#305;</label>
+                    <input class="form-control" name="StartYear" type="number" min="1950" max="2100" value="@(Model.StartYear ?? Model.Year)" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Biti&#351; Y&#305;l&#305;</label>
+                    <input class="form-control" name="EndYear" type="number" min="1950" max="2100" value="@(Model.EndYear ?? Model.Year)" required />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">G&ouml;rsel URL</label>
+                    <input class="form-control" name="ImageUrl" type="url" value="@Model.ImageUrl" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Motor</label>
+                    <input class="form-control" name="Engine" value="@Model.Engine" />
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-accent w-100 mt-2" type="submit">
+                        <i class="bi bi-save me-2"></i>G&uuml;ncelle
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

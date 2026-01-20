@@ -1,0 +1,175 @@
+@model AutoPartsWeb.Models.AdminUsersVm
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout = "_AdminLayout";
+    var defaultAdmin = "admin@site.com";
+    var query = ViewBag.Q as string ?? string.Empty;
+}
+
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+        <h3 class="fw-bold mb-0"><i class="bi bi-people me-2"></i>Kullanıcılar</h3>
+        <div class="text-secondary small">Toplam @Model.Customers.Count kayıt</div>
+    </div>
+    <form asp-action="Users" method="get" class="d-flex align-items-center gap-2">
+        <input type="text" name="q" value="@query" class="form-control form-control-sm" placeholder="İsim veya email ara..." />
+        <button class="btn btn-sm btn-accent" type="submit">Ara</button>
+        @if (!string.IsNullOrWhiteSpace(query))
+        {
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Users">Temizle</a>
+        }
+    </form>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+}
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning rounded-4">@TempData["Warning"]</div>
+}
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Kullanıcılar</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height:320px; overflow:auto;">
+            <table class="table align-middle mb-0">
+                <thead class="text-secondary small">
+                    <tr>
+                        <th>#</th>
+                        <th>Ad Soyad</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.Customers)
+                    {
+                        var isDefaultAdmin = string.Equals(u.Email, defaultAdmin, StringComparison.OrdinalIgnoreCase);
+                        <tr>
+                            <td>@u.Id</td>
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td class="text-secondary">@u.Role</td>
+                            <td class="text-end">
+                                <form asp-action="UpdateUserRole" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <select class="form-select form-select-sm d-inline w-auto" name="role" @(isDefaultAdmin ? "disabled" : "")>
+                                        <option value="User" selected="@(u.Role == "User")">User</option>
+                                        <option value="Admin" selected="@(u.Role == "Admin")">Admin</option>
+                                    </select>
+                                    <button class="btn btn-sm btn-accent ms-1" type="submit" @(isDefaultAdmin ? "disabled" : "")>Kaydet</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Satıcılar</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height:320px; overflow:auto;">
+            <table class="table align-middle mb-0">
+                <thead class="text-secondary small">
+                    <tr>
+                        <th>#</th>
+                        <th>Ad Soyad</th>
+                        <th>Email</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.Sellers)
+                    {
+                        var suspended = u.Role == "SellerSuspended";
+                        <tr>
+                            <td>@u.Id</td>
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td>@(suspended ? "Askıda" : "Aktif")</td>
+                            <td class="text-end">
+                                @if (suspended)
+                                {
+                                    <form asp-action="ReinstateSeller" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <button class="btn btn-sm btn-success">Aktifleştir</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="SuspendSeller" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <button class="btn btn-sm btn-outline-danger">Askıya Al</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Onay Bekleyen Satıcılar</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height:320px; overflow:auto;">
+            <table class="table align-middle mb-0">
+                <thead class="text-secondary small">
+                    <tr>
+                        <th>#</th>
+                        <th>Ad Soyad</th>
+                        <th>Email</th>
+                        <th>Şirket</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PendingApplications.Any())
+                    {
+                        foreach (var a in Model.PendingApplications)
+                        {
+                            <tr>
+                                <td>@a.User.Id</td>
+                                <td>@a.User.FullName</td>
+                                <td>@a.User.Email</td>
+                                <td>@a.CompanyName</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary me-1" asp-action="SellerApplicationDetail" asp-route-id="@a.Id">Detay</a>
+                                    <form asp-action="ApproveSeller" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@a.UserId" />
+                                        <button class="btn btn-sm btn-success">Onayla</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-secondary py-3">Bekleyen başvuru yok.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

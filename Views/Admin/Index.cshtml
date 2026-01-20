@@ -1,0 +1,249 @@
+@model AutoPartsWeb.Models.AdminDashboardVm
+
+@{
+    ViewData["Title"] = "Admin Panel";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="fw-bold mb-1">Admin Dashboard</h2>
+        <div class="text-secondary">Sistem özeti ve yönetim kısayolları.</div>
+    </div>
+    <a class="btn btn-dark" href="#">
+        <i class="bi bi-gear me-2"></i>Ayarlar
+    </a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small mb-1">Toplam Parça</div>
+                <div class="fs-4 fw-bold">@Model.TotalParts</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small mb-1">Toplam Araç</div>
+                <div class="fs-4 fw-bold">@Model.TotalVehicles</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small mb-1">Toplam Kullanıcı</div>
+                <div class="fs-4 fw-bold">@Model.TotalUsers</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small mb-1">Toplam Satış</div>
+                <div class="fs-4 fw-bold">@Model.TotalSales.ToString("C0")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold mb-0">7 Günlük Toplam Satış</h5>
+                    <div class="text-secondary small">Toplam sipariş: @Model.TotalOrders</div>
+                </div>
+                <canvas id="adminSalesChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-2">En Çok Satılan Ürünler</h5>
+                @if (Model.TopProducts.Count == 0)
+                {
+                    <div class="text-secondary small mb-2">Henüz satış verisi yok.</div>
+                }
+                <canvas id="topProductsChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold mb-0">Son Eklenen Parçalar</h5>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Admin" asp-action="Parts">
+                        Tümünü Gör
+                    </a>
+                </div>
+
+                @if (Model.LatestParts.Count == 0)
+                {
+                    <div class="text-secondary">Henüz parça yok.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr class="text-secondary">
+                                    <th>Parça</th>
+                                    <th>Marka</th>
+                                    <th>Uyumluluk</th>
+                                    <th class="text-end">Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.LatestParts)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@p.Name</td>
+                                        <td>@p.Brand</td>
+                                        <td>@(p.Vehicle == null ? "-" : $"{p.Vehicle.Brand} {p.Vehicle.Model} ({p.Vehicle.Year})")</td>
+                                        <td class="text-end">@p.Stock</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="d-flex flex-column gap-3">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-2">En Çok Satış Yapan Satıcılar</h5>
+                    @if (Model.TopSellers.Count == 0)
+                    {
+                        <div class="text-secondary small mb-2">Henüz satış verisi yok.</div>
+                    }
+                    <canvas id="topSellersChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Hızlı İşlemler</h5>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-accent" asp-controller="Admin" asp-action="Parts">
+                            <i class="bi bi-box-seam me-2"></i>Parçaları Yönet
+                        </a>
+                        <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Vehicles">
+                            <i class="bi bi-car-front me-2"></i>Araçları Yönet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const salesLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SalesChartPoints.Select(p => p.Label)));
+        const salesTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SalesChartPoints.Select(p => p.Total)));
+        const topProductLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopProducts.Select(p => p.Name)));
+        const topProductTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopProducts.Select(p => p.Total)));
+        const topProductQuantities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopProducts.Select(p => p.Quantity)));
+        const topSellerLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSellers.Select(p => p.Name)));
+        const topSellerTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSellers.Select(p => p.Total)));
+        const topSellerQuantities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSellers.Select(p => p.Quantity)));
+
+        const currencyFormat = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 });
+
+        const salesChart = new Chart(document.getElementById('adminSalesChart'), {
+            type: 'line',
+            data: {
+                labels: salesLabels,
+                datasets: [{
+                    label: 'Satış (TRY)',
+                    data: salesTotals,
+                    borderColor: '#ff7a00',
+                    backgroundColor: 'rgba(255,122,0,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ff7a00'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        const topProductsChart = new Chart(document.getElementById('topProductsChart'), {
+            type: 'bar',
+            data: {
+                labels: topProductLabels,
+                datasets: [{
+                    label: 'Ürün Geliri',
+                    data: topProductTotals,
+                    backgroundColor: 'rgba(34, 139, 230, 0.25)',
+                    borderColor: '#228be6',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const qty = topProductQuantities[ctx.dataIndex] ?? 0;
+                                const total = ctx.parsed.y ?? 0;
+                                return `Toplam: ${currencyFormat.format(total)} | Adet: ${qty}`;
+                            }
+                        }
+                    }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        const topSellersChart = new Chart(document.getElementById('topSellersChart'), {
+            type: 'bar',
+            data: {
+                labels: topSellerLabels,
+                datasets: [{
+                    label: 'Satıcı Geliri',
+                    data: topSellerTotals,
+                    backgroundColor: 'rgba(46, 204, 113, 0.25)',
+                    borderColor: '#2ecc71',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const qty = topSellerQuantities[ctx.dataIndex] ?? 0;
+                                const total = ctx.parsed.y ?? 0;
+                                return `Toplam: ${currencyFormat.format(total)} | Adet: ${qty}`;
+                            }
+                        }
+                    }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+}

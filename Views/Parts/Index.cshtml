@@ -1,0 +1,492 @@
+﻿@using System.Text.Json
+@model List<AutoPartsWeb.Models.Part>
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Yedek Parçalar";
+    var filters = ViewBag.Filters;
+    string q = filters?.q ?? "";
+    string category = filters?.category ?? "";
+    int? vehicleId = filters?.vehicleId;
+    string fBrand = filters?.brand ?? "";
+    string fModel = filters?.model ?? "";
+    int? fYear = filters?.year;
+    var selCategoryList = filters?.categoryList as List<string> ?? new();
+    var selPartBrandList = filters?.partBrandList as List<string> ?? new();
+    var selBrandList = filters?.brandList as List<string> ?? new();
+    var selModelList = filters?.modelList as List<string> ?? new();
+    var selYearList = filters?.yearList as List<int> ?? new();
+    decimal? minPrice = filters?.minPrice;
+    decimal? maxPrice = filters?.maxPrice;
+    string sort = filters?.sort ?? "";
+    string partBrand = filters?.partBrand ?? "";
+    var vehicles = ViewBag.Vehicles as IEnumerable<dynamic> ?? new List<dynamic>();
+    var categories = ViewBag.Categories as List<string> ?? new();
+    var partBrands = ViewBag.PartBrands as List<string> ?? new();
+    var ratings = ViewBag.Ratings as Dictionary<int, (double avg, int count)> ?? new();
+    var filterBrands = ViewBag.FilterBrands as List<string> ?? new();
+    var filterModels = ViewBag.FilterModels as List<string> ?? new();
+    var filterYears = ViewBag.FilterYears as List<int> ?? new();
+    var vehiclesJson = ViewBag.VehicleJson as string ?? "[]";
+    Func<AutoPartsWeb.Models.Vehicle, string> formatVehicleLabel = v =>
+    {
+        var sy = v.StartYear ?? v.Year;
+        var ey = v.EndYear ?? v.Year;
+        var yearText = sy == ey ? sy.ToString() : $"{sy}-{ey}";
+        return $"{v.Brand} {v.Model} ({yearText})";
+    };
+    var selectedChips = new List<(string Label, string Name, string Value)>();
+    foreach (var c in selCategoryList) selectedChips.Add(($"Kategori: {c}", "categoryList", c));
+    foreach (var pb in selPartBrandList) selectedChips.Add(($"Urun Markasi: {pb}", "partBrandList", pb));
+    foreach (var b in selBrandList) selectedChips.Add(($"Arac Marka: {b}", "brandList", b));
+    foreach (var m in selModelList) selectedChips.Add(($"Model: {m}", "modelList", m));
+    foreach (var y in selYearList) selectedChips.Add(($"Yil: {y}", "yearList", y.ToString()));
+    if (!string.IsNullOrWhiteSpace(q)) selectedChips.Add(($"Arama: {q}", "q", ""));
+    if (minPrice.HasValue) selectedChips.Add(($"Min: {minPrice.Value}", "minPrice", ""));
+    if (maxPrice.HasValue) selectedChips.Add(($"Max: {maxPrice.Value}", "maxPrice", ""));
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <h2 class="fw-bold mb-1">Yedek Parçalar</h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="filter-panel">
+                <form method="get" class="d-flex flex-column gap-3">
+                    <div class="filter-search-wrap">
+                        <input type="text" class="form-control" id="filterSearchInput" name="q" value="@q" placeholder="Parça adı / marka ara..." />
+                        <div class="filter-suggestions d-none" id="filterSuggestions"></div>
+                    </div>
+                    @if (selectedChips.Count > 0)
+                    {
+                        <div class="selected-filters">
+                            @foreach (var chip in selectedChips)
+                            {
+                                <span class="filter-chip">
+                                    @chip.Label
+                                    <button type="button" class="filter-chip-remove" data-name="@chip.Name" data-value="@chip.Value" aria-label="Kaldir">&times;</button>
+                                </span>
+                            }
+                            <button type="button" class="filter-chip filter-chip-clear">T&uuml;m&uuml;n&uuml; temizle</button>
+                        </div>
+                    }
+                    <div>
+                        <h6 class="mb-2">Kategoriler</h6>
+                        <div class="border rounded p-2" style="max-height:140px; overflow:auto;">
+                            @foreach (var c in categories)
+                            {
+                                var checkedAttr = selCategoryList.Contains(c) || (!selCategoryList.Any() && c == category) ? "checked" : "";
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="categoryList" value="@c" id="cat_@c" @checkedAttr />
+                                    <label class="form-check-label" for="cat_@c">@c</label>
+                                </div>
+                            }
+                    </div>
+                    </div>
+                    <div>
+                        <h6 class="mb-2">Ürün Markası</h6>
+                        <div class="border rounded p-2" style="max-height:140px; overflow:auto;">
+                            @foreach (var pb in partBrands)
+                            {
+                                var checkedAttr = selPartBrandList.Contains(pb) || (!selPartBrandList.Any() && pb == partBrand) ? "checked" : "";
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="partBrandList" value="@pb" id="pb_@pb" @checkedAttr />
+                                    <label class="form-check-label" for="pb_@pb">@pb</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="mb-2">Araç</h6>
+                        <div class="mb-2">
+                            <div class="small text-secondary mb-1">Marka</div>
+                            <div class="border rounded p-2" style="max-height:140px; overflow:auto;">
+                                @foreach (var b in filterBrands)
+                                {
+                                    var checkedAttr = selBrandList.Contains(b) || (!selBrandList.Any() && b == fBrand);
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="brandList" value="@b" id="b_@b" @(checkedAttr ? "checked" : "") />
+                                        <label class="form-check-label" for="b_@b">@b</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="small text-secondary mb-1">Model</div>
+                            <div class="border rounded p-2" style="max-height:140px; overflow:auto;">
+                                @foreach (var m in filterModels)
+                                {
+                                    var checkedAttr = selModelList.Contains(m) || (!selModelList.Any() && m == fModel);
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="modelList" value="@m" id="m_@m" @(checkedAttr ? "checked" : "") />
+                                        <label class="form-check-label" for="m_@m">@m</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="small text-secondary mb-1">Yıl</div>
+                            <div class="border rounded p-2" style="max-height:140px; overflow:auto;">
+                                @foreach (var y in filterYears)
+                                {
+                                    var checkedAttr = selYearList.Contains(y) || (selYearList.Count == 0 && fYear.HasValue && fYear.Value == y);
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="yearList" value="@y" id="y_@y" @(checkedAttr ? "checked" : "") />
+                                        <label class="form-check-label" for="y_@y">@y</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="mb-2">Fiyat aralığı</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <input class="form-control" name="minPrice" type="number" step="0.01" value="@(minPrice?.ToString() ?? "")" placeholder="Min ₺" />
+                            <input class="form-control" name="maxPrice" type="number" step="0.01" value="@(maxPrice?.ToString() ?? "")" placeholder="Max ₺" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-end mb-3">
+                <form method="get" class="d-inline">
+                    <input type="hidden" name="q" value="@q" />
+                    <input type="hidden" name="category" value="@category" />
+                    @foreach (var c in selCategoryList) { <input type="hidden" name="categoryList" value="@c" /> }
+                    <input type="hidden" name="partBrand" value="@partBrand" />
+                    @foreach (var pb in selPartBrandList) { <input type="hidden" name="partBrandList" value="@pb" /> }
+                    <input type="hidden" name="minPrice" value="@(minPrice?.ToString() ?? "")" />
+                    <input type="hidden" name="maxPrice" value="@(maxPrice?.ToString() ?? "")" />
+                    @foreach (var b in selBrandList) { <input type="hidden" name="brandList" value="@b" /> }
+                    @foreach (var m in selModelList) { <input type="hidden" name="modelList" value="@m" /> }
+                    @foreach (var y in selYearList) { <input type="hidden" name="yearList" value="@y" /> }
+                    <select class="form-select form-select-sm" name="sort" onchange="this.form.submit()" style="width:auto; min-width:180px;">
+                        <option value="">Öne çıkanlar</option>
+                        <option value="price_asc" @(sort == "price_asc" ? "selected" : "")>Fiyat (Artan)</option>
+                        <option value="price_desc" @(sort == "price_desc" ? "selected" : "")>Fiyat (Azalan)</option>
+                        <option value="name_asc" @(sort == "name_asc" ? "selected" : "")>İsim (A-Z)</option>
+                        <option value="name_desc" @(sort == "name_desc" ? "selected" : "")>İsim (Z-A)</option>
+                    </select>
+                </form>
+            </div>
+            @if (Model.Count == 0)
+            {
+                <div class="alert alert-warning rounded-4">
+                    Sonuç bulunamadı. Filtreleri değiştirip tekrar deneyin.
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var p in Model)
+                    {
+                        var statusBadge = p.Stock <= 0 ? "text-bg-danger"
+                                        : p.Stock <= 3 ? "text-bg-warning"
+                                        : "text-bg-success";
+
+                        var statusText = p.Stock <= 0 ? "Tükendi"
+                                       : p.Stock <= 3 ? "Az"
+                                       : "Stokta";
+
+                        var compat = p.PartVehicles?.Select(pv => pv.Vehicle).Where(v => v != null).ToList();
+
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="product-card h-100 position-relative overflow-hidden">
+                                <div class="ratio ratio-4x3">
+                                    @if (!string.IsNullOrWhiteSpace(p.ImageUrl))
+                                    {
+                                        <img src="@p.ImageUrl" alt="@p.Name" class="w-100 h-100" style="object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                            <img src="~/images/logo.png" alt="@p.Name" class="p-3" style="max-height:80%; object-fit:contain;" />
+                                        </div>
+                                    }
+                                    <span class="badge status-badge @statusBadge">@statusText</span>
+                                </div>
+
+                                <div class="p-3 d-flex flex-column gap-1">
+                                    <div class="fw-semibold product-title">@p.Name</div>
+                                    <div class="product-meta">@p.Brand • @p.Category</div>
+                                    @if (ratings.TryGetValue(p.Id, out var rinfo) && rinfo.count > 0)
+                                    {
+                                        <div class="d-flex align-items-center gap-1 text-warning small">
+                                            @for (int s = 1; s <= 5; s++)
+                                            {
+                                                var cls = s <= Math.Round(rinfo.avg) ? "bi-star-fill" : "bi-star";
+                                                <i class="bi @cls"></i>
+                                            }
+                                            <span class="text-secondary">(@rinfo.count)</span>
+                                        </div>
+                                    }
+
+                                    <div class="product-compat">
+                                        @if (compat != null && compat.Count > 0)
+                                        {
+                                            @string.Join(", ", compat.Select(v => formatVehicleLabel(v!)))
+                                        }
+                                        else if (p.Vehicle != null)
+                                        {
+                                            @formatVehicleLabel(p.Vehicle)
+                                        }
+                                    </div>
+
+                                    <div class="flex-grow-1"></div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <div class="price">@p.Price.ToString("C0")</div>
+                                        <span class="small text-secondary">Stok: @p.Stock</span>
+                                    </div>
+                                    <form class="mt-2" asp-controller="Cart" asp-action="Add" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="partId" value="@p.Id" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path + Context.Request.QueryString" />
+                                        <button class="btn btn-sm btn-accent w-100 d-flex align-items-center justify-content-center gap-2" type="submit">
+                                            <i class="bi bi-bag-plus"></i> Sepete Ekle
+                                        </button>
+                                    </form>
+                                </div>
+                                <a class="stretched-link" asp-controller="Parts" asp-action="Details" asp-route-id="@p.Id"></a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const vehicles = @Html.Raw(vehiclesJson);
+        const brandSelect = document.getElementById("brandSelect");
+        const modelSelect = document.getElementById("modelSelect");
+        const yearSelect = document.getElementById("yearSelect");
+
+        const selectedBrand = "@fBrand";
+        const selectedModel = "@fModel";
+        const selectedYear = "@(fYear?.ToString() ?? "")";
+
+        function rebuildModels() {
+            const brand = brandSelect.value;
+            const models = Array.from(new Set(
+                vehicles
+                    .filter(v => !brand || v.brand === brand)
+                    .map(v => v.model)
+            )).sort();
+            modelSelect.innerHTML = "";
+            const optAll = document.createElement("option");
+            optAll.value = "";
+            optAll.textContent = "Model (tümü)";
+            modelSelect.appendChild(optAll);
+            models.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m;
+                opt.textContent = m;
+                if (m === selectedModel) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+        }
+
+        function rebuildYears() {
+            const brand = brandSelect.value;
+            const model = modelSelect.value;
+            const years = Array.from(new Set(
+                vehicles
+                    .filter(v => (!brand || v.brand === brand) && (!model || v.model === model))
+                    .map(v => v.year)
+            )).sort((a, b) => b - a);
+            yearSelect.innerHTML = "";
+            const optAll = document.createElement("option");
+            optAll.value = "";
+            optAll.textContent = "Yıl (tümü)";
+            yearSelect.appendChild(optAll);
+            years.forEach(y => {
+                const opt = document.createElement("option");
+                opt.value = y;
+                opt.textContent = y;
+                if (selectedYear && y.toString() === selectedYear) opt.selected = true;
+                yearSelect.appendChild(opt);
+            });
+        }
+
+        brandSelect.addEventListener("change", () => {
+            modelSelect.value = "";
+            yearSelect.value = "";
+            rebuildModels();
+            rebuildYears();
+        });
+
+        modelSelect.addEventListener("change", () => {
+            yearSelect.value = "";
+            rebuildYears();
+        });
+
+        rebuildModels();
+        rebuildYears();
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector(".filter-panel form");
+        if (!form) return;
+
+        const scrollKey = "partsFiltersScroll";
+        const restore = sessionStorage.getItem(scrollKey);
+        if (restore) {
+            window.scrollTo(0, parseInt(restore, 10) || 0);
+            sessionStorage.removeItem(scrollKey);
+        }
+
+        const markScroll = () => {
+            sessionStorage.setItem(scrollKey, String(window.scrollY));
+        };
+
+        form.addEventListener("submit", markScroll);
+
+        const instantInputs = form.querySelectorAll("input[type='checkbox'], input[type='radio'], select");
+        instantInputs.forEach(el => {
+            el.addEventListener("change", () => {
+                markScroll();
+                form.submit();
+            });
+        });
+
+        const typingInputs = Array.from(form.querySelectorAll("input[type='text'], input[type='number']"))
+            .filter(el => el.name !== "q");
+        typingInputs.forEach(el => {
+            let timer = null;
+            el.addEventListener("input", () => {
+                if (timer) window.clearTimeout(timer);
+                timer = window.setTimeout(() => {
+                    markScroll();
+                    form.submit();
+                }, 500);
+            });
+        });
+
+        const qInput = form.querySelector("input[name='q']");
+        const suggestionBox = document.getElementById("filterSuggestions");
+        if (qInput && suggestionBox) {
+            const sources = [
+                { name: "categoryList", label: "Kategori", values: @Html.Raw(JsonSerializer.Serialize(categories)) },
+                { name: "partBrandList", label: "Urun Markasi", values: @Html.Raw(JsonSerializer.Serialize(partBrands)) },
+                { name: "brandList", label: "Arac Marka", values: @Html.Raw(JsonSerializer.Serialize(filterBrands)) },
+                { name: "modelList", label: "Model", values: @Html.Raw(JsonSerializer.Serialize(filterModels)) },
+                { name: "yearList", label: "Yil", values: @Html.Raw(JsonSerializer.Serialize(filterYears)) }
+            ];
+
+            const hideSuggestions = () => {
+                suggestionBox.innerHTML = "";
+                suggestionBox.classList.add("d-none");
+            };
+
+            const renderSuggestions = () => {
+                const term = (qInput.value || "").trim().toLowerCase();
+                suggestionBox.innerHTML = "";
+                if (!term) {
+                    suggestionBox.classList.add("d-none");
+                    return;
+                }
+
+                const matches = [];
+                sources.forEach(src => {
+                    (src.values || []).forEach(v => {
+                        const value = String(v ?? "");
+                        if (!value) return;
+                        if (value.toLowerCase().includes(term)) {
+                            matches.push({ name: src.name, value, label: `${src.label}: ${value}` });
+                        }
+                    });
+                });
+
+                if (matches.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "filter-suggestion empty";
+                    empty.textContent = "Eslesme bulunamadi.";
+                    suggestionBox.appendChild(empty);
+                    suggestionBox.classList.remove("d-none");
+                    return;
+                }
+
+                matches.slice(0, 30).forEach(item => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "filter-suggestion";
+                    const label = document.createElement("span");
+                    label.textContent = item.label;
+                    const hint = document.createElement("small");
+                    hint.textContent = "Sec";
+                    btn.appendChild(label);
+                    btn.appendChild(hint);
+                    btn.addEventListener("click", () => {
+                        const inputs = form.querySelectorAll(`input[name='${item.name}']`);
+                        inputs.forEach(input => {
+                            if (input.value === item.value) input.checked = true;
+                        });
+                        qInput.value = "";
+                        hideSuggestions();
+                        markScroll();
+                        form.submit();
+                    });
+                    suggestionBox.appendChild(btn);
+                });
+
+                suggestionBox.classList.remove("d-none");
+            };
+
+            qInput.addEventListener("input", renderSuggestions);
+            qInput.addEventListener("focus", renderSuggestions);
+            qInput.addEventListener("blur", () => {
+                window.setTimeout(() => hideSuggestions(), 150);
+            });
+        }
+
+        const chipButtons = document.querySelectorAll(".filter-chip-remove");
+        chipButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const name = btn.getAttribute("data-name");
+                const value = btn.getAttribute("data-value");
+                if (!name) return;
+
+                const inputs = form.querySelectorAll(`[name='${name}']`);
+                inputs.forEach(input => {
+                    if (input.type === "checkbox" || input.type === "radio") {
+                        if (value && input.value === value) input.checked = false;
+                    } else {
+                        input.value = "";
+                    }
+                });
+
+                markScroll();
+                form.submit();
+            });
+        });
+
+        const clearBtn = document.querySelector(".filter-chip-clear");
+        if (clearBtn) {
+            clearBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const inputs = form.querySelectorAll("input, select");
+                inputs.forEach(input => {
+                    if (input.type === "checkbox" || input.type === "radio") {
+                        input.checked = false;
+                    } else {
+                        input.value = "";
+                    }
+                });
+                markScroll();
+                form.submit();
+            });
+        }
+    });
+</script>

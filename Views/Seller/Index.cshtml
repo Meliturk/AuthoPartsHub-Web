@@ -1,0 +1,178 @@
+@model AutoPartsWeb.Models.SellerDashboardVm
+@{
+    ViewData["Title"] = "Satici Dashboard";
+    Layout = "_SellerLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Sat&#305;c&#305; Dashboard</h3>
+        <div class="text-secondary">Son sat&#305;&#351; &ouml;zetleri ve trendler.</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small">Son 1 G&uuml;n</div>
+                <div class="fs-4 fw-bold">@Model.DayTotal.ToString("C0")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small">Son 1 Hafta</div>
+                <div class="fs-4 fw-bold">@Model.WeekTotal.ToString("C0")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small">Son 1 Ay</div>
+                <div class="fs-4 fw-bold">@Model.MonthTotal.ToString("C0")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="text-secondary small">Son 1 Y&#305;l</div>
+                <div class="fs-4 fw-bold">@Model.YearTotal.ToString("C0")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold mb-0">7 G&uuml;nl&uuml;k Sat&#305;&#351;</h5>
+                    <div class="text-secondary small">Toplam sipari&#351;: @Model.OrdersCount</div>
+                </div>
+                <canvas id="dailySalesChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="d-flex flex-column gap-3">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-2">K&#305;sa Bilgi</h5>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-secondary">Toplam &Uuml;r&uuml;n</span>
+                        <span class="fw-bold">@Model.PartsCount</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-secondary">Toplam sipari&#351;</span>
+                        <span class="fw-bold">@Model.OrdersCount</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-2">&Uuml;r&uuml;n Geliri (30 G&uuml;n)</h5>
+                    @if (Model.ProductSales.Count == 0)
+                    {
+                        <div class="text-secondary small">Hen&uuml;z sat&#305;&#351; yok.</div>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.ProductSales)
+                        {
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div>
+                                    <div class="fw-semibold">@item.Name</div>
+                                    <div class="text-secondary small">@item.Quantity adet</div>
+                                </div>
+                                <div class="fw-bold">@item.Total.ToString("C0")</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold mb-0">&Uuml;r&uuml;n Bazl&#305; Gelir</h5>
+                    <div class="text-secondary small">Son 30 g&uuml;n</div>
+                </div>
+                <canvas id="productRevenueChart" height="140"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const dailyLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartPoints.Select(p => p.Label)));
+        const dailyTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartPoints.Select(p => p.Total)));
+        const productLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductSales.Select(p => p.Name)));
+        const productTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductSales.Select(p => p.Total)));
+        const productQuantities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductSales.Select(p => p.Quantity)));
+
+        const currencyFormat = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 });
+
+        const dailyChart = new Chart(document.getElementById('dailySalesChart'), {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Satis (TRY)',
+                    data: dailyTotals,
+                    borderColor: '#ff7a00',
+                    backgroundColor: 'rgba(255,122,0,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ff7a00'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        const productChart = new Chart(document.getElementById('productRevenueChart'), {
+            type: 'bar',
+            data: {
+                labels: productLabels,
+                datasets: [{
+                    label: 'Urun Geliri',
+                    data: productTotals,
+                    backgroundColor: 'rgba(34, 139, 230, 0.25)',
+                    borderColor: '#228be6',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const qty = productQuantities[ctx.dataIndex] ?? 0;
+                                const total = ctx.parsed.x ?? 0;
+                                return `Toplam: ${currencyFormat.format(total)} | Adet: ${qty}`;
+                            }
+                        }
+                    }
+                },
+                scales: { x: { beginAtZero: true } }
+            }
+        });
+    </script>
+}

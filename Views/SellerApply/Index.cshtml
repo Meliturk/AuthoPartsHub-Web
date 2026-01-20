@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Ürünlerinizi Satın";
+    var loggedIn = User?.Identity?.IsAuthenticated ?? false;
+    var currentEmail = ViewBag.CurrentEmail as string ?? "";
+    var currentName = ViewBag.CurrentName as string ?? "";
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="fw-bold">Ürünlerinizi Satın</h2>
+            <p class="text-secondary">AutoParts Hub üzerinde parçalarınızı listeleyin, siparişlerinizi yönetin ve satış performansınızı takip edin.</p>
+            <ul class="list-unstyled text-secondary">
+                <li><i class="bi bi-check-circle text-success me-2"></i>Satış, sipariş ve stok takibi tek panelde</li>
+                <li><i class="bi bi-check-circle text-success me-2"></i>1 gün / 1 hafta / 1 ay / 1 yıl satış grafikleri</li>
+                <li><i class="bi bi-check-circle text-success me-2"></i>Hızlı ödeme, müşteri iletişimi ve destek</li>
+            </ul>
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success rounded-4 mt-3">@TempData["Success"]</div>
+            }
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-warning rounded-4 mt-3">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@err.ErrorMessage</div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Satıcı Başvurusu</h5>
+                    <form method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Ad Soyad</label>
+                                <input name="fullName" class="form-control" value="@(loggedIn ? currentName : "")" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">E-posta</label>
+                                @if (loggedIn)
+                                {
+                                    <input name="email" class="form-control" value="@currentEmail" readonly />
+                                }
+                                else
+                                {
+                                    <input name="email" type="email" class="form-control" required />
+                                }
+                            </div>
+                            @if (!loggedIn)
+                            {
+                                <div class="col-md-6">
+                                    <label class="form-label">Sifre</label>
+                                    <input name="password" type="password" class="form-control" required
+                                           minlength="8"
+                                           pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}"
+                                           title="En az 8 karakter, bir buyuk harf, bir kucuk harf ve bir rakam icermeli." />
+                                    <div class="form-text">
+                                        En az 8 karakter, bir buyuk harf, bir kucuk harf ve bir rakam icermeli.
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-6">
+                                <label class="form-label">Firma Adı</label>
+                                <input name="companyName" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Telefon</label>
+                                <input name="phone" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Vergi No (opsiyonel)</label>
+                                <input name="taxNumber" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Adres</label>
+                                <input name="address" class="form-control" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Not (opsiyonel)</label>
+                                <textarea name="note" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-accent w-100 mt-3" type="submit">
+                            Başvuruyu Gönder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

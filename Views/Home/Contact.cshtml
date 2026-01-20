@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div class="container py-4">
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-3">Bize Yazın</h3>
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+                    }
+                    @if (TempData["Warning"] != null)
+                    {
+                        <div class="alert alert-warning rounded-4">@TempData["Warning"]</div>
+                    }
+                    <form asp-controller="Contact" asp-action="Submit" method="post" class="row g-3">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-6">
+                            <label class="form-label">Ad Soyad</label>
+                            <input class="form-control" name="name" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-posta</label>
+                            <input class="form-control" name="email" type="email" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telefon</label>
+                            <input class="form-control" name="phone" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Mesaj</label>
+                            <textarea class="form-control" name="message" rows="4" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-accent" type="submit">Gönder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-2">AutoParts Hub</h4>
+                    <div class="text-secondary mb-3">Yedek parça mağazanız</div>
+                    <div class="small mb-2"><strong>Email:</strong> support@autoparts.com</div>
+                    <div class="small mb-2"><strong>Tel:</strong> 0 555 555 55 55</div>
+                    <div class="small mb-2"><strong>Adres:</strong> İstanbul, TR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

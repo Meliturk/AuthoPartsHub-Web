@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Giris Yap";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-3 px-3 py-2 text-white" style="background: var(--brand);">
+                            <i class="bi bi-gear-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">AutoParts Hub</div>
+                            <div class="small text-secondary">Hesabiniza giris yapin</div>
+                        </div>
+                    </div>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success small">@TempData["Success"]</div>
+                    }
+                    @if (TempData["Warning"] != null)
+                    {
+                        <div class="alert alert-warning small">@TempData["Warning"]</div>
+                    }
+                    @if (TempData["ConfirmLink"] != null)
+                    {
+                        <div class="alert alert-info small">
+                            Onay linki (gelistirme): <a href="@TempData["ConfirmLink"]">@TempData["ConfirmLink"]</a>
+                        </div>
+                    }
+                    @if (ViewBag.ConfirmLink != null)
+                    {
+                        <div class="alert alert-info small">
+                            Onay linki (gelistirme): <a href="@ViewBag.ConfirmLink">@ViewBag.ConfirmLink</a>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger small mb-2"></div>
+                        <div class="mb-3">
+                            <label class="form-label">E-posta</label>
+                            <input class="form-control" name="email" type="email" placeholder="ornek@mail.com" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Sifre</label>
+                            <div class="input-group">
+                                <input class="form-control" id="loginPassword" name="password" type="password" placeholder="********" />
+                                <button class="btn btn-outline-secondary" type="button" id="toggleLoginPassword" aria-label="Sifreyi goster">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mb-3">
+                            <a class="small text-decoration-none" asp-controller="Auth" asp-action="ForgotPassword">Sifremi unuttum</a>
+                        </div>
+
+                        <button class="btn btn-accent w-100 mb-3" type="submit">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Giris Yap
+                        </button>
+                    </form>
+
+                    <div class="text-center small text-secondary">
+                        Hesabin yok mu? <a class="text-decoration-none" asp-controller="Auth" asp-action="Register">Kayit Ol</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const toggle = document.getElementById("toggleLoginPassword");
+        const input = document.getElementById("loginPassword");
+        if (!toggle || !input) return;
+
+        toggle.addEventListener("click", () => {
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            toggle.setAttribute("aria-label", isPassword ? "Sifreyi gizle" : "Sifreyi goster");
+            const icon = toggle.querySelector("i");
+            if (icon) {
+                icon.classList.toggle("bi-eye", !isPassword);
+                icon.classList.toggle("bi-eye-slash", isPassword);
+            }
+        });
+    })();
+</script>

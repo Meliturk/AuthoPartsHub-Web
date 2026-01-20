@@ -1,0 +1,63 @@
+@model AutoPartsWeb.Models.SellerApplication
+@{
+    ViewData["Title"] = "Satıcı Başvurusu";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Satıcı Başvurusu Detayı</h3>
+        <div class="text-secondary small">#@Model.Id • Durum: @Model.Status</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Users">‹ Geri</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+}
+
+<div class="card border-0 shadow-sm rounded-4 mb-3">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="fw-bold">Kullanıcı</div>
+                <div>@Model.User?.FullName</div>
+                <div class="text-secondary">@Model.User?.Email</div>
+            </div>
+            <div class="col-md-6">
+                <div class="fw-bold">Şirket</div>
+                <div>@Model.CompanyName</div>
+            </div>
+            <div class="col-md-6">
+                <div class="fw-bold">İletişim</div>
+                <div>@Model.ContactName</div>
+                <div>@Model.Phone</div>
+            </div>
+            <div class="col-md-6">
+                <div class="fw-bold">Adres</div>
+                <div>@Model.Address</div>
+            </div>
+            <div class="col-md-6">
+                <div class="fw-bold">Vergi No</div>
+                <div>@(string.IsNullOrWhiteSpace(Model.TaxNumber) ? "-" : Model.TaxNumber)</div>
+            </div>
+            <div class="col-md-6">
+                <div class="fw-bold">Başvuru Tarihi</div>
+                <div>@Model.CreatedAt.ToLocalTime()</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <div class="fw-bold mb-2">Admin Notu</div>
+        <form asp-action="UpdateSellerApplicationNote" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <textarea name="note" class="form-control mb-2" rows="3">@Model.Note</textarea>
+            <button class="btn btn-accent" type="submit">Kaydet</button>
+        </form>
+    </div>
+</div>

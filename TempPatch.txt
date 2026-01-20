@@ -1,0 +1,58 @@
+@model List<AutoPartsWeb.Models.Part>
+@{
+    ViewData["Title"] = "Ürünlerim";
+    Layout = "_SellerLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Ürünlerim</h3>
+        <div class="text-secondary small">Toplam @Model.Count kayıt</div>
+    </div>
+    <a class="btn btn-accent" asp-action="CreatePart"><i class="bi bi-plus-circle me-2"></i>Yeni Ürün</a>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-2">@TempData["Success"]</div>
+    }
+</div>
+
+<div class="table-responsive card border-0 shadow-sm rounded-4">
+    <table class="table align-middle mb-0">
+        <thead class="text-secondary small">
+            <tr>
+                <th>Görsel</th>
+                <th>Ürün</th>
+                <th>Kategori</th>
+                <th class="text-end">Fiyat</th>
+                <th class="text-end">Stok</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td style="width:80px;">
+                        @if (!string.IsNullOrWhiteSpace(p.ImageUrl))
+                        {
+                            <img src="@p.ImageUrl" alt="@p.Name" class="img-fluid rounded" style="height:64px; width:64px; object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="height:64px; width:64px;">
+                                <i class="bi bi-image text-secondary"></i>
+                            </div>
+                        }
+                    </td>
+                    <td class="fw-semibold">@p.Name</td>
+                    <td>@p.Category</td>
+                    <td class="text-end">@p.Price.ToString("C0")</td>
+                    <td class="text-end">@p.Stock</td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-secondary py-4">Henüz ürün yok.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

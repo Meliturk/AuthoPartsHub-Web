@@ -1,0 +1,153 @@
+﻿@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<AutoPartsWeb.Models.Order>
+
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_AdminLayout";
+
+    var statusMap = new Dictionary<string, string>
+    {
+        { "Pending", "Beklemede" },
+        { "Processing", "Hazırlanıyor" },
+        { "Shipped", "Kargolandı" },
+        { "Cancelled", "İptal" },
+        { "Completed", "Tamamlandı" }
+    };
+    var statusColor = new Dictionary<string, string>
+    {
+        { "Pending", "badge bg-warning text-dark" },
+        { "Processing", "badge bg-info text-dark" },
+        { "Shipped", "badge bg-primary" },
+        { "Cancelled", "badge bg-danger" },
+        { "Completed", "badge bg-success" }
+    };
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Siparişler</h3>
+        <div class="text-secondary small">Toplam @Model.Count kayıt</div>
+    </div>
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <input type="hidden" name="status" value="@(ViewBag.FilterStatus ?? "")" />
+        <input type="hidden" name="q" value="@(ViewBag.Q ?? "")" />
+        <input type="hidden" name="from" value="@(ViewBag.From ?? "")" />
+        <input type="hidden" name="to" value="@(ViewBag.To ?? "")" />
+        @if (ViewBag.ShowingCompleted == true || ViewBag.ShowingCancelled == true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders">Aktif Siparisler</a>
+        }
+        @if (ViewBag.ShowingCompleted != true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders" asp-route-status="Completed">Tamamlananlar</a>
+        }
+        @if (ViewBag.ShowingCancelled != true)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Orders" asp-route-status="Cancelled">Iptaller</a>
+        }
+    </form>
+</div>
+
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning rounded-4">@TempData["Warning"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0">
+        <form method="get" class="row g-2 align-items-center p-3 border-bottom">
+            <div class="col-md-3">
+                <input class="form-control" name="q" value="@(ViewBag.Q ?? "")" placeholder="Müşteri / email ara..." />
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="status">
+                    <option value="" @(string.IsNullOrWhiteSpace(ViewBag.FilterStatus) ? "selected" : "")>Durum (aktif varsayılan)</option>
+                    <option value="Pending" @(ViewBag.FilterStatus == "Pending" ? "selected" : "")>Beklemede</option>
+                    <option value="Processing" @(ViewBag.FilterStatus == "Processing" ? "selected" : "")>Hazırlanıyor</option>
+                    <option value="Shipped" @(ViewBag.FilterStatus == "Shipped" ? "selected" : "")>Kargolandı</option>
+                    <option value="Cancelled" @(ViewBag.FilterStatus == "Cancelled" ? "selected" : "")>İptal</option>
+                    <option value="Completed" @(ViewBag.FilterStatus == "Completed" ? "selected" : "")>Tamamlandı</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="date" name="from" value="@(ViewBag.From ?? "")" />
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="date" name="to" value="@(ViewBag.To ?? "")" />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-accent" type="submit">Filtrele</button>
+                <a class="btn btn-outline-secondary" asp-action="Orders">Sıfırla</a>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="text-secondary small">
+                    <tr>
+                        <th>#</th>
+                        <th>Müşteri</th>
+                        <th>Email</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th>&Uuml;r&uuml;nler</th>
+                        <th class="text-end">Tutar</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        var statusText = statusMap.ContainsKey(o.Status) ? statusMap[o.Status] : o.Status;
+                        var statusCls = statusColor.ContainsKey(o.Status) ? statusColor[o.Status] : "badge bg-secondary";
+                        <tr>
+                            <td>@o.Id</td>
+                            <td>@o.CustomerName</td>
+                            <td>@o.Email</td>
+                            <td>@o.CreatedAt.ToLocalTime().ToString("g")</td>
+                            <td><span class="@statusCls">@statusText</span></td>
+                            <td>
+                                @if (o.Items != null && o.Items.Count > 0)
+                                {
+                                    <div class="d-flex flex-column gap-1">
+                                        @foreach (var item in o.Items)
+                                        {
+                                            var partName = item.Part?.Name ?? $"Part #{item.PartId}";
+                                            var img = item.Part?.ImageUrl;
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if (!string.IsNullOrWhiteSpace(img))
+                                                {
+                                                    <img src="@img" alt="@partName" style="width:36px; height:36px; object-fit:cover; border-radius:8px;" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                                        <i class="bi bi-image text-secondary"></i>
+                                                    </div>
+                                                }
+                                                <span class="small">@partName x @item.Quantity</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-secondary small">-</span>
+                                }
+                            </td>
+                            <td class="text-end">@o.Total.ToString("C0")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="OrderDetail" asp-route-id="@o.Id">
+                                    Detay
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

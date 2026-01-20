@@ -1,0 +1,15 @@
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+.status-pending { background: #f6c23e; }
+.status-processing { background: #0dcaf0; }
+.status-shipped { background: #0d6efd; }
+.status-cancelled { background: #dc3545; }
+.status-completed { background: #198754; }
+
+.status-new { background: #dc3545; }
+.status-read { background: #6c757d; }

@@ -1,0 +1,77 @@
+@model AutoPartsWeb.Models.Order
+@{
+    ViewData["Title"] = $"Sipariş #{Model.Id}";
+    Layout = "_SellerLayout";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="fw-bold mb-0">Sipariş #@Model.Id</h3>
+        <div class="text-secondary small">Tarih: @Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Orders">Geri</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Ürünler</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="text-secondary small">
+                            <tr>
+                                <th>Parça</th>
+                                <th class="text-end">Adet</th>
+                                <th class="text-end">Birim</th>
+                                <th class="text-end">Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@item.Part.Name</td>
+                                    <td class="text-end">@item.Quantity</td>
+                                    <td class="text-end">@item.UnitPrice.ToString("C0")</td>
+                                    <td class="text-end">@((item.UnitPrice * item.Quantity).ToString("C0"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Müşteri</h5>
+                <div class="small">
+                    <div><strong>Ad:</strong> @Model.CustomerName</div>
+                    <div><strong>Email:</strong> @Model.Email</div>
+                    <div><strong>Adres:</strong> @Model.Address</div>
+                    <div><strong>Şehir:</strong> @Model.City</div>
+                    <div><strong>Telefon:</strong> @Model.Phone</div>
+                </div>
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h6 class="fw-bold mb-2">Durum</h6>
+                <form asp-action="UpdateOrderStatus" method="post" class="d-flex gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="Pending" selected="@(Model.Status == "Pending")">Beklemede</option>
+                        <option value="Processing" selected="@(Model.Status == "Processing")">Hazırlanıyor</option>
+                        <option value="Shipped" selected="@(Model.Status == "Shipped")">Kargoda</option>
+                        <option value="Cancelled" selected="@(Model.Status == "Cancelled")">İptal</option>
+                        <option value="Completed" selected="@(Model.Status == "Completed")">Tamamlandı</option>
+                    </select>
+                    <button class="btn btn-sm btn-accent" type="submit">Güncelle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

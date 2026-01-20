@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AutoPartsWeb</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AutoPartsWeb.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+@{
+    var isAuth = User?.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User?.IsInRole("Admin") ?? false;
+    var isSeller = User?.IsInRole("Seller") ?? false;
+    var isSellerPending = User?.IsInRole("SellerPending") ?? false;
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString() ?? "";
+    Func<string, string, string> navClass = (ctrl, act) =>
+    {
+        var active = string.Equals(currentController, ctrl, StringComparison.OrdinalIgnoreCase)
+                     && string.Equals(currentAction, act, StringComparison.OrdinalIgnoreCase);
+        return "nav-link" + (active ? " active" : "");
+    };
+    var displayName = (User?.Identity?.Name ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(displayName))
+    {
+        displayName = "Kullanici";
+    }
+    var roleLabel = isAdmin ? "Admin" : isSeller ? "Satici" : "";
+    var cartCount = 0;
+    try
+    {
+        var cartJson = Microsoft.AspNetCore.Http.SessionExtensions.GetString(Context.Session, "CartItems");
+        if (!string.IsNullOrWhiteSpace(cartJson))
+        {
+            var items = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<AutoPartsWeb.Models.CartItem>>(cartJson);
+            if (items != null)
+            {
+                foreach (var item in items)
+                {
+                    cartCount += item.Quantity;
+                }
+            }
+        }
+    }
+    catch
+    {
+        cartCount = 0;
+    }
+    var cartCountText = cartCount > 99 ? "99+" : cartCount.ToString();
+}
+    <header>
+        <div class="topbar">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <span><i class="bi bi-telephone icon me-1"></i> +90 555 123 45 67</span>
+                    <span><i class="bi bi-envelope icon me-1"></i> info@autoparts.com</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-geo-alt icon"></i><span>T&uuml;rkiye geneli &uuml;cretsiz kargo</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-nav py-3">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <a class="brand-wrap d-flex align-items-center gap-2 text-decoration-none" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/logo.png" alt="AutoParts Hub" />
+                        <div>
+                            <div class="fw-bold" style="color:var(--brand)">AutoParts Hub</div>
+                            <div class="text-secondary small">Kaliteli Yedek Par&ccedil;a</div>
+                        </div>
+                    </a>
+
+                    <div class="flex-grow-1">
+                        <form class="search-bar d-flex align-items-center gap-2" asp-controller="Parts" asp-action="Index" method="get">
+                            <i class="bi bi-search text-secondary ms-1"></i>
+                            <input type="text" name="q" placeholder="Par&ccedil;a ad&#305;, OEM numaras&#305; veya ara&ccedil; modeli ara..." />
+                            <button class="btn btn-sm btn-accent px-3" type="submit">Ara</button>
+                        </form>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        @if (!isSeller && !isSellerPending)
+                        {
+                            <a class="btn btn-outline-secondary btn-sm" asp-controller="SellerApply" asp-action="Index">Sat&#305;c&#305; Ol</a>
+                        }
+                        @if (!isAdmin && !isSeller)
+                        {
+                            <a class="btn btn-outline-secondary btn-sm position-relative" asp-controller="Cart" asp-action="Index" aria-label="Sepet">
+                                <i class="bi bi-bag"></i>
+                                @if (cartCount > 0)
+                                {
+                                    <span class="cart-badge">@cartCountText</span>
+                                }
+                            </a>
+                        }
+                        @if (isAuth)
+                        {
+                            <a class="user-chip" asp-controller="Account" asp-action="Profile" title="Profil">
+                                <i class="bi bi-person-circle"></i>
+                                <span>@displayName</span>
+                                @if (!string.IsNullOrWhiteSpace(roleLabel))
+                                {
+                                    <span class="user-role">@roleLabel</span>
+                                }
+                            </a>
+                        }
+                        @if (!isAuth)
+                        {
+                            <a class="btn btn-accent btn-sm px-3" asp-controller="Auth" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Giri&#351; Yap
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-outline-danger btn-sm" type="submit" title="&Ccedil;&#305;k&#305;&#351;">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 nav-pills">
+                    <a class="@navClass("Home","Index")" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                    <a class="@navClass("Parts","Index")" asp-controller="Parts" asp-action="Index">T&uuml;m &Uuml;r&uuml;nler</a>
+                    <a class="@navClass("Vehicles","Index")" asp-controller="Vehicles" asp-action="Index">Ara&ccedil;lar</a>
+                    <a class="@navClass("Home","About")" asp-controller="Home" asp-action="About">Hakk&#305;m&#305;zda</a>
+                    <a class="@navClass("Home","Contact")" asp-controller="Home" asp-action="Contact">&#304;leti&#351;im</a>
+                    @if (isSeller)
+                    {
+                        <a class="@navClass("Seller","Index")" asp-controller="Seller" asp-action="Index">Sat&#305;c&#305; Paneli</a>
+                    }
+                    @if (isAdmin)
+                    {
+                        <a class="@navClass("Admin","Index")" asp-controller="Admin" asp-action="Index">Admin</a>
+                    }
+                    @if (isAuth && !isAdmin && !isSeller){
+                        <a class="@navClass("Account","MyOrders")" asp-controller="Account" asp-action="MyOrders">Sipari&#351;lerim</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container my-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer-dark mt-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="fw-bold mb-2">AutoParts Hub</div>
+                    <div class="text-secondary">Otomobil yedek par&ccedil;a ihtiya&ccedil;lar&#305;n&#305;z i&ccedil;in g&uuml;venilir adresiniz. Kaliteli &uuml;r&uuml;nler, h&#305;zl&#305; teslimat.</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-bold mb-2">H&#305;zl&#305; Linkler</div>
+                    <div class="d-flex flex-column gap-1">
+                        <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                        <a asp-controller="Parts" asp-action="Index">&Uuml;r&uuml;nler</a>
+                        <a asp-controller="Home" asp-action="About">Hakk&#305;m&#305;zda</a>
+                        <a asp-controller="Home" asp-action="Contact">&#304;leti&#351;im</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-bold mb-2">M&uuml;&#351;teri Hizmetleri</div>
+                    <div class="d-flex flex-column gap-1">
+                        <span>Yard&#305;m Merkezi</span>
+                        <span>&#304;ade ve De&#287;i&#351;im</span>
+                        <span>Kargo Takibi</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-bold mb-2">&#304;leti&#351;im</div>
+                    <div class="d-flex flex-column gap-1">
+                        <span>Atat&uuml;rk Cad. No:123</span>
+                        <span>Ka&#287;&#305;thane, &#304;stanbul</span>
+                        <span>+90 555 123 45 67</span>
+                        <span>info@autoparts.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

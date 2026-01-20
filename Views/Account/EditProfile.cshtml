@@ -1,0 +1,65 @@
+@model AutoPartsWeb.Models.AppUser
+@{
+    ViewData["Title"] = "Profili Düzenle";
+    Layout = "_Layout";
+}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <div class="mb-4">
+            <h3 class="fw-bold mb-0">Profili Düzenle</h3>
+            <div class="text-secondary small">Hesap bilgilerinizi güncelleyin</div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+        {
+            <div class="alert alert-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Info"] != null)
+        {
+            <div class="alert alert-info">
+                @TempData["Info"]
+            </div>
+        }
+
+        <form method="post" asp-action="EditProfile">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Ad Soyad</label>
+                    <input type="text" class="form-control" name="fullName" value="@Model?.FullName" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">E-posta</label>
+                    <input type="email" class="form-control" name="email" value="@Model?.Email" required />
+                    @if (!Model?.EmailConfirmed ?? false)
+                    {
+                        <div class="form-text text-warning">
+                            <i class="bi bi-exclamation-triangle me-1"></i>E-posta onaylanmamış
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-accent">
+                    <i class="bi bi-check-circle me-1"></i>Kaydet
+                </button>
+                <a class="btn btn-outline-secondary" asp-action="Profile">
+                    <i class="bi bi-x-circle me-1"></i>İptal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

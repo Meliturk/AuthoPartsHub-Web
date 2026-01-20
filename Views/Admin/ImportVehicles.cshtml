@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "CSV ile Ara\u00e7 Aktar";
+    Layout = "_AdminLayout";
+    var importResult = ViewBag.ImportResult as object;
+
+    Func<object?, string, int> getIntProp = (obj, name) =>
+    {
+        if (obj == null) return 0;
+        var prop = obj.GetType().GetProperty(name);
+        if (prop == null) return 0;
+        var value = prop.GetValue(obj);
+        if (value == null) return 0;
+        return int.TryParse(value.ToString(), out var parsed) ? parsed : 0;
+    };
+
+    Func<object?, string, List<string>> getListProp = (obj, name) =>
+    {
+        var list = new List<string>();
+        if (obj == null) return list;
+        var prop = obj.GetType().GetProperty(name);
+        if (prop == null) return list;
+        var value = prop.GetValue(obj);
+        if (value is System.Collections.IEnumerable enumerable)
+        {
+            foreach (var item in enumerable)
+            {
+                if (item == null) continue;
+                list.Add(item.ToString() ?? "");
+            }
+        }
+        return list;
+    };
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+        <h3 class="fw-bold mb-1">CSV ile Ara&ccedil; Aktar</h3>
+        <div class="text-secondary">CSV dosyas&#305;ndan ara&ccedil; listesi y&uuml;kleyin.</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Vehicles">
+        Geri
+    </a>
+</div>
+
+@if (ViewBag.ImportSuccess != null)
+{
+    <div class="alert alert-success rounded-4">
+        <i class="bi bi-check-circle me-2"></i>@ViewBag.ImportSuccess
+        @if (importResult != null)
+        {
+            var deletedVehicles = getIntProp(importResult, "DeletedVehicles");
+            var deletedParts = getIntProp(importResult, "DeletedParts");
+            <div class="small text-secondary mt-1">
+                Silinen ara&ccedil;: @deletedVehicles
+            </div>
+        }
+    </div>
+}
+@{
+    var errors = getListProp(importResult, "Errors");
+}
+@if (errors.Count > 0)
+{
+    <div class="alert alert-warning rounded-4">
+        <div class="fw-semibold mb-2">CSV hatalar&#305;</div>
+        <ul class="mb-0">
+            @foreach (var err in errors)
+            {
+                <li>@err</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <div class="mb-3">
+            <div class="fw-semibold">CSV kolonlar&#305;</div>
+            <div class="text-secondary small">
+                Brand, Model, StartYear, EndYear, Engine (opsiyonel), ImageUrl (opsiyonel). T&uuml;rk&ccedil;e ba&#351;l&#305;klar da kabul: Marka, Model, BaslangicYili, BitisYili, Motor, GorselUrl. Dosyan&#305;zdaki basliklar da kabul: marka, model, variant, yil_baslangic, yil_bitis, gorsel_url.
+            </div>
+            <div class="text-secondary small mt-1">
+                Ay&#305;ra&ccedil; virg&uuml;l veya noktal&#305; virg&uuml;l olabilir.
+            </div>
+            <pre class="bg-light border rounded-3 p-3 mt-2 mb-0">marka,model,variant,yil_baslangic,yil_bitis,gorsel_url
+Ford,Focus,1.6 TDCi,1998,2022,https://ornek.com/ford-focus.webp</pre>
+        </div>
+
+        <form asp-controller="Admin" asp-action="ImportVehicles" method="post" enctype="multipart/form-data" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-md-8">
+                <label class="form-label">CSV Dosyas&#305;</label>
+                <input class="form-control" type="file" name="csvFile" accept=".csv,text/csv" required />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="clearExisting" value="true" />
+                    <label class="form-check-label">
+                        Mevcut ara&ccedil;lar&#305; sil (&#252;r&#252;nler kal&#305;r)
+                    </label>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-accent" type="submit">
+                    <i class="bi bi-upload me-2"></i>CSV Aktar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
