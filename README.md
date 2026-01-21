@@ -4,6 +4,10 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 
 ---
 
+- [YouTube Tanıtım Videosu](https://youtu.be/Oabcg5J9Kig)
+
+---
+
 ## Proje Amacı
 
 - Araç uyumluluğuna göre doğru yedek parçayı hızlıca bulmayı kolaylaştırmak
