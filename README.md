@@ -4,7 +4,7 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 
 ---
 
-- [YouTube Tanıtım Videosu](https://youtu.be/Oabcg5J9Kig)
+- [YouTube Tanıtım Videosu](https://youtu.be/tjNPBbt3gQU)
 
 ---
 
