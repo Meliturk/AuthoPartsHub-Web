@@ -70,7 +70,7 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 ![Ana Sayfa](docs/screenshots/1.png)
 
 **Araçlar Sayfası (marka/model/yıl kataloğu)**
-![Araçlar](docs/screenshots/6.png)
+![Satıcı Başvurusu](docs/screenshots/3.png)
 
 **Ürün Listeleme (filtre paneli + kartlar)**
 ![Tüm Ürünler](docs/screenshots/7.png)
@@ -98,7 +98,8 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 ### 2) Satıcı — Başvuru & Panel
 
 **Satıcı Başvurusu (Satıcı Ol)**
-![Satıcı Başvurusu](docs/screenshots/3.png)
+![Araçlar](docs/screenshots/6.png)
+
 
 **Satıcı Dashboard (satış özetleri, grafikler, ürün geliri)**
 ![Satıcı Dashboard](docs/screenshots/10.png)
@@ -107,16 +108,10 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 ![Satıcı Ürünlerim](docs/screenshots/11.png)
 
 **Satıcı Siparişler (aktif siparişler, durum güncelleme, gör)**
-![Satıcı Siparişler](docs/screenshots/21.png)
+![Satıcı Tamamlanan Siparişler](docs/screenshots/12.png)
 
 **Satıcı Siparişler (tamamlananlar listesi)**
-![Satıcı Tamamlanan Siparişler](docs/screenshots/22.png)
-
-**Satıcı Sorular (aktif sorulara yanıt verme)**
-![Satıcı Sorular](docs/screenshots/23.png)
-
-**Satıcı Sorular (cevaplanmış örnekler)**
-![Satıcı Sorular Liste](docs/screenshots/24.png)
+![Satıcı Siparişler](docs/screenshots/21.png)
 
 ---
 
@@ -141,16 +136,13 @@ AutoParts Hub; kullanıcıların araç uyumluluğuna göre yedek parça arayıp 
 **Siparişler (beklemede/aktif siparişler listesi)**
 ![Admin Siparişler Aktif](docs/screenshots/20.png)
 
-**Siparişler (tamamlananlar listesi)**
-![Admin Siparişler Tamamlandı](docs/screenshots/12.png)
-
 **Kullanıcılar (user/admin rolleri + satıcılar + onay süreçleri)**
-![Kullanıcılar](docs/screenshots/30.png)
+![Kullanıcılar](docs/screenshots/22.png)
 
 **Mesajlar (iletişim formundan gelen mesajlar listesi, yeni/okundu)**
-![Mesajlar](docs/screenshots/25.png)
+![Mesajlar](docs/screenshots/23.png)
 
 **Mesaj Detay (okundu bilgisi + içerik)**
-![Mesaj Detay](docs/screenshots/2.png)
+![Mesaj Detay](docs/screenshots/25.png)
 
 ---
