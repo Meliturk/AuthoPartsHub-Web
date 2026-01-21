@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "OFfdBpN4vWjNezen939p/x+1EgBg0QSqloe7chz8Auw=",
+  "Hash": "VT9mzvqMoytPwiK9eAifDfQrVVIfnERrVvxHHXxpimE=",
   "Source": "AutoPartsWeb",
   "BasePath": "_content/AutoPartsWeb",
   "Mode": "Default",
@@ -3188,6 +3188,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\7a09f533da3942348ecae6cbebb6cc7f.webp"
     },
     {
+      "Identity": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp",
+      "SourceId": "AutoPartsWeb",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\",
+      "BasePath": "_content/AutoPartsWeb",
+      "RelativePath": "uploads/7ef2769c286f4d29869df3e33dcbadc6#[.{fingerprint}]?.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "p2zxvbc3w7",
+      "Integrity": "0ToTevqQCFlEtB4Y8cTdp+6MxKbdf5mrnpyf+Cr6DGA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp"
+    },
+    {
       "Identity": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\86d5652259df491688d593664debcb13.webp",
       "SourceId": "AutoPartsWeb",
       "SourceType": "Discovered",
@@ -3440,6 +3461,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\def5adf7a86b4561b7275768a98fca6d.webp"
     },
     {
+      "Identity": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e62981a8131146e0bc00f3db5566e394.webp",
+      "SourceId": "AutoPartsWeb",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\",
+      "BasePath": "_content/AutoPartsWeb",
+      "RelativePath": "uploads/e62981a8131146e0bc00f3db5566e394#[.{fingerprint}]?.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "y4gq32r3ho",
+      "Integrity": "Mm9XE94RJ/RP1lUjbaas+D0Yf/9YXrjepQl9RdWbI/I=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\e62981a8131146e0bc00f3db5566e394.webp"
+    },
+    {
       "Identity": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e804faab58b34607ae9841668e93bee1.webp",
       "SourceId": "AutoPartsWeb",
       "SourceType": "Discovered",
@@ -3501,6 +3543,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\f2f0a5a4aed8425ea3c5a29f0f9a0d98.webp"
+    },
+    {
+      "Identity": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp",
+      "SourceId": "AutoPartsWeb",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\",
+      "BasePath": "_content/AutoPartsWeb",
+      "RelativePath": "uploads/f66932edfc24409db2c8cbc56e7a395f#[.{fingerprint}]?.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "7q9waq1aqn",
+      "Integrity": "P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp"
     }
   ],
   "Endpoints": [
@@ -25133,6 +25196,88 @@
       ]
     },
     {
+      "Route": "uploads/7ef2769c286f4d29869df3e33dcbadc6.p2zxvbc3w7.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "9186"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"0ToTevqQCFlEtB4Y8cTdp+6MxKbdf5mrnpyf+Cr6DGA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "p2zxvbc3w7"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/7ef2769c286f4d29869df3e33dcbadc6.webp"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-0ToTevqQCFlEtB4Y8cTdp+6MxKbdf5mrnpyf+Cr6DGA="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/7ef2769c286f4d29869df3e33dcbadc6.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "9186"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"0ToTevqQCFlEtB4Y8cTdp+6MxKbdf5mrnpyf+Cr6DGA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-0ToTevqQCFlEtB4Y8cTdp+6MxKbdf5mrnpyf+Cr6DGA="
+        }
+      ]
+    },
+    {
       "Route": "uploads/86d5652259df491688d593664debcb13.pwr8en2c4w.webp",
       "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\86d5652259df491688d593664debcb13.webp",
       "Selectors": [],
@@ -26117,6 +26262,88 @@
       ]
     },
     {
+      "Route": "uploads/e62981a8131146e0bc00f3db5566e394.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e62981a8131146e0bc00f3db5566e394.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12970"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Mm9XE94RJ/RP1lUjbaas+D0Yf/9YXrjepQl9RdWbI/I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Mm9XE94RJ/RP1lUjbaas+D0Yf/9YXrjepQl9RdWbI/I="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/e62981a8131146e0bc00f3db5566e394.y4gq32r3ho.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e62981a8131146e0bc00f3db5566e394.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12970"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Mm9XE94RJ/RP1lUjbaas+D0Yf/9YXrjepQl9RdWbI/I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "y4gq32r3ho"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/e62981a8131146e0bc00f3db5566e394.webp"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Mm9XE94RJ/RP1lUjbaas+D0Yf/9YXrjepQl9RdWbI/I="
+        }
+      ]
+    },
+    {
       "Route": "uploads/e804faab58b34607ae9841668e93bee1.e0v38ah523.webp",
       "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e804faab58b34607ae9841668e93bee1.webp",
       "Selectors": [],
@@ -26359,6 +26586,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-QoAQ4/yn0Kyhp5U52/GhyQsdghncDEmf4s/0LixKkwE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/f66932edfc24409db2c8cbc56e7a395f.7q9waq1aqn.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12978"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7q9waq1aqn"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/f66932edfc24409db2c8cbc56e7a395f.webp"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/f66932edfc24409db2c8cbc56e7a395f.webp",
+      "AssetFile": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12978"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/webp"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 20 Jan 2026 20:54:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU="
         }
       ]
     }

@@ -27,7 +27,7 @@ namespace AutoPartsWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string fullName, string email, string password, string companyName, string phone, string address, string? taxNumber, string? note)
+        public async Task<IActionResult> Index(string fullName, string email, string? password, string companyName, string phone, string address, string? taxNumber, string? note)
         {
             fullName = (fullName ?? "").Trim();
             email = (email ?? "").Trim();
@@ -59,8 +59,14 @@ namespace AutoPartsWeb.Controllers
             var existingUser = await _db.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
             if (existingUser == null)
             {
-                if (!ValidationRules.TryValidatePassword(password, out var passwordError))
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    ModelState.AddModelError(nameof(password), "Sifre zorunlu.");
+                }
+                else if (!ValidationRules.TryValidatePassword(password, out var passwordError))
+                {
                     ModelState.AddModelError(nameof(password), passwordError);
+                }
             }
 
             if (!ModelState.IsValid)
@@ -74,7 +80,7 @@ namespace AutoPartsWeb.Controllers
                 {
                     FullName = fullName,
                     Email = email,
-                    PasswordHash = PasswordHasher.Hash(password),
+                    PasswordHash = PasswordHasher.Hash(password ?? ""),
                     Role = "SellerPending",
                     EmailConfirmed = false,
                     EmailConfirmTokenHash = PasswordHasher.Hash(confirmToken),

@@ -972,6 +972,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-NWtuE5pSjwEMvUfrAF5vZyRsKCJcE87tkCCJJr/IO6o="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"104396"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022NWtuE5pSjwEMvUfrAF5vZyRsKCJcE87tkCCJJr/IO6o=\u0022"},{"Name":"Last-Modified","Value":"Tue, 30 Dec 2025 20:39:34 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/7ef2769c286f4d29869df3e33dcbadc6.p2zxvbc3w7.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\7ef2769c286f4d29869df3e33dcbadc6.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"p2zxvbc3w7"},{"Name":"integrity","Value":"sha256-0ToTevqQCFlEtB4Y8cTdp\u002B6MxKbdf5mrnpyf\u002BCr6DGA="},{"Name":"label","Value":"_content/AutoPartsWeb/uploads/7ef2769c286f4d29869df3e33dcbadc6.webp"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"9186"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u00220ToTevqQCFlEtB4Y8cTdp\u002B6MxKbdf5mrnpyf\u002BCr6DGA=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/7ef2769c286f4d29869df3e33dcbadc6.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\7ef2769c286f4d29869df3e33dcbadc6.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-0ToTevqQCFlEtB4Y8cTdp\u002B6MxKbdf5mrnpyf\u002BCr6DGA="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"9186"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u00220ToTevqQCFlEtB4Y8cTdp\u002B6MxKbdf5mrnpyf\u002BCr6DGA=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/86d5652259df491688d593664debcb13.pwr8en2c4w.webp">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\86d5652259df491688d593664debcb13.webp'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -1116,6 +1128,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-xHfrndi2l/dvM19/fcgHi0c8u46vBal2QEJGpvpOcnA="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"4240"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022xHfrndi2l/dvM19/fcgHi0c8u46vBal2QEJGpvpOcnA=\u0022"},{"Name":"Last-Modified","Value":"Fri, 09 Jan 2026 19:17:49 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/e62981a8131146e0bc00f3db5566e394.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e62981a8131146e0bc00f3db5566e394.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Mm9XE94RJ/RP1lUjbaas\u002BD0Yf/9YXrjepQl9RdWbI/I="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"12970"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022Mm9XE94RJ/RP1lUjbaas\u002BD0Yf/9YXrjepQl9RdWbI/I=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/e62981a8131146e0bc00f3db5566e394.y4gq32r3ho.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e62981a8131146e0bc00f3db5566e394.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"y4gq32r3ho"},{"Name":"integrity","Value":"sha256-Mm9XE94RJ/RP1lUjbaas\u002BD0Yf/9YXrjepQl9RdWbI/I="},{"Name":"label","Value":"_content/AutoPartsWeb/uploads/e62981a8131146e0bc00f3db5566e394.webp"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"12970"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022Mm9XE94RJ/RP1lUjbaas\u002BD0Yf/9YXrjepQl9RdWbI/I=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/e804faab58b34607ae9841668e93bee1.e0v38ah523.webp">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e804faab58b34607ae9841668e93bee1.webp'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -1151,6 +1175,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-QoAQ4/yn0Kyhp5U52/GhyQsdghncDEmf4s/0LixKkwE="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"79460"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022QoAQ4/yn0Kyhp5U52/GhyQsdghncDEmf4s/0LixKkwE=\u0022"},{"Name":"Last-Modified","Value":"Mon, 05 Jan 2026 20:03:51 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/f66932edfc24409db2c8cbc56e7a395f.7q9waq1aqn.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\f66932edfc24409db2c8cbc56e7a395f.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"7q9waq1aqn"},{"Name":"integrity","Value":"sha256-P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU="},{"Name":"label","Value":"_content/AutoPartsWeb/uploads/f66932edfc24409db2c8cbc56e7a395f.webp"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"12978"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/AutoPartsWeb/uploads/f66932edfc24409db2c8cbc56e7a395f.webp">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\f66932edfc24409db2c8cbc56e7a395f.webp'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"12978"},{"Name":"Content-Type","Value":"image/webp"},{"Name":"ETag","Value":"\u0022P3sfZK6r6OYCIa8YRWDY/UP8kgVSU1K/6BdO1rUh3UU=\u0022"},{"Name":"Last-Modified","Value":"Tue, 20 Jan 2026 20:54:20 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
   </ItemGroup>
 </Project>

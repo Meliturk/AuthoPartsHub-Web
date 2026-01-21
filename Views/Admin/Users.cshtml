@@ -65,6 +65,14 @@
                                     </select>
                                     <button class="btn btn-sm btn-accent ms-1" type="submit" @(isDefaultAdmin ? "disabled" : "")>Kaydet</button>
                                 </form>
+                                @if (!isDefaultAdmin)
+                                {
+                                    <form asp-action="DeleteUser" method="post" class="d-inline ms-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit" onclick="return confirm('Bu kullaniciyi silmek istiyor musunuz?');">Sil</button>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     }
@@ -116,6 +124,11 @@
                                         <button class="btn btn-sm btn-outline-danger">Askıya Al</button>
                                     </form>
                                 }
+                                <form asp-action="DeleteUser" method="post" class="d-inline ms-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit" onclick="return confirm('Bu saticiyi silmek istiyor musunuz?');">Sil</button>
+                                </form>
                             </td>
                         </tr>
                     }

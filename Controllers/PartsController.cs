@@ -208,7 +208,7 @@ namespace AutoPartsWeb.Controllers
             // brand-model-year filtre listeleri
             var filterBrands = vehicleList.Select(v => v.Brand).Distinct().OrderBy(v => v).ToList();
             var filterModels = vehicleList
-                .Where(v => string.IsNullOrWhiteSpace(brand) || v.Brand == brand)
+                .Where(v => !selectedBrands.Any() || selectedBrands.Contains(v.Brand))
                 .Select(v => v.Model)
                 .Distinct()
                 .OrderBy(v => v)
@@ -216,8 +216,8 @@ namespace AutoPartsWeb.Controllers
             var filterYearsSet = new HashSet<int>();
             foreach (var v in vehicleList)
             {
-                if (!string.IsNullOrWhiteSpace(brand) && v.Brand != brand) continue;
-                if (!string.IsNullOrWhiteSpace(model) && v.Model != model) continue;
+                if (selectedBrands.Any() && !selectedBrands.Contains(v.Brand)) continue;
+                if (selectedModels.Any() && !selectedModels.Contains(v.Model)) continue;
 
                 if (v.StartYear.HasValue && v.EndYear.HasValue)
                 {

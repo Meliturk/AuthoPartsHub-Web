@@ -1,4 +1,5 @@
 using System.IO;
+using System.Security.Claims;
 using AutoPartsWeb.Data;
 using System.Text;
 using AutoPartsWeb.Models;
@@ -639,7 +640,7 @@ namespace AutoPartsWeb.Controllers
 
             var vm = new AdminUsersVm
             {
-                Customers = users.Where(u => u.Role == "User").OrderBy(u => u.FullName).ToList(),
+                Customers = users.Where(u => u.Role == "User" || u.Role == "Admin").OrderBy(u => u.FullName).ToList(),
                 Sellers = users.Where(u => u.Role == "Seller" || u.Role == "SellerSuspended").OrderBy(u => u.FullName).ToList(),
                 PendingApplications = pendingApps,
                 SellerApplications = sellerApps
@@ -672,6 +673,41 @@ namespace AutoPartsWeb.Controllers
             user.Role = role;
             await _db.SaveChangesAsync();
             TempData["Success"] = "Rol güncellendi.";
+            return RedirectToAction(nameof(Users));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return NotFound();
+
+            if (string.Equals(user.Email, DefaultAdminEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Warning"] = "Varsayilan admin silinemez.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            var currentUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var cid) ? cid : 0;
+            if (currentUserId == id)
+            {
+                TempData["Warning"] = "Kendi hesabinizi silemezsiniz.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            if (user.Role == "Seller" || user.Role == "SellerSuspended" || user.Role == "SellerPending")
+            {
+                var sellerParts = await _db.Parts.Where(p => p.SellerId == id).ToListAsync();
+                foreach (var part in sellerParts)
+                {
+                    part.SellerId = null;
+                }
+            }
+
+            _db.AppUsers.Remove(user);
+            await _db.SaveChangesAsync();
+            TempData["Success"] = "Kullanici silindi.";
             return RedirectToAction(nameof(Users));
         }
 

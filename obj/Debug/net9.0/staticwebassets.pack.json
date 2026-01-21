@@ -325,6 +325,10 @@
       "PackagePath": "staticwebassets\\uploads\\7a09f533da3942348ecae6cbebb6cc7f.webp"
     },
     {
+      "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp",
+      "PackagePath": "staticwebassets\\uploads\\7ef2769c286f4d29869df3e33dcbadc6.webp"
+    },
+    {
       "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\86d5652259df491688d593664debcb13.webp",
       "PackagePath": "staticwebassets\\uploads\\86d5652259df491688d593664debcb13.webp"
     },
@@ -373,6 +377,10 @@
       "PackagePath": "staticwebassets\\uploads\\def5adf7a86b4561b7275768a98fca6d.webp"
     },
     {
+      "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e62981a8131146e0bc00f3db5566e394.webp",
+      "PackagePath": "staticwebassets\\uploads\\e62981a8131146e0bc00f3db5566e394.webp"
+    },
+    {
       "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\e804faab58b34607ae9841668e93bee1.webp",
       "PackagePath": "staticwebassets\\uploads\\e804faab58b34607ae9841668e93bee1.webp"
     },
@@ -383,6 +391,10 @@
     {
       "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\f2f0a5a4aed8425ea3c5a29f0f9a0d98.webp",
       "PackagePath": "staticwebassets\\uploads\\f2f0a5a4aed8425ea3c5a29f0f9a0d98.webp"
+    },
+    {
+      "Id": "C:\\Users\\TURK PC\\Desktop\\AutoPartsWeb\\wwwroot\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp",
+      "PackagePath": "staticwebassets\\uploads\\f66932edfc24409db2c8cbc56e7a395f.webp"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.AutoPartsWeb.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
